@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/Appointment_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/appoin"/>
+
+    <item android:id="@+id/History_doc"
+        android:icon="@drawable/ic_history"
+        android:title="@string/History"/>
+
+    <item android:id="@+id/Review_doc"
+        android:icon="@drawable/review"
+        android:title="@string/r"/>
+
+    <item android:id="@+id/profile_doc"
+        android:icon="@drawable/ic_baseline_account_circle_24"
+        android:title="@string/Profile"/>
+</menu>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/My_History"
+        android:title="@string/MyHistory"
+        android:icon="@drawable/ic_history"
+        />
+
+    <item android:id="@+id/Entire_History"
+        android:title="@string/EntireHistory"/>
+
+</menu>

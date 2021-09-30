@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/Menu_Review"
+        android:icon="@drawable/review"
+        android:title="@string/Rev"/>
+
+    <item android:id="@+id/Menu_QRcode"
+        android:icon="@drawable/ic_qrcode"
+        android:title="@string/Payment"/>
+</menu>

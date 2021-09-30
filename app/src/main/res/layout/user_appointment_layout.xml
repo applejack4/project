@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/_10sdp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <ImageView
+            android:id="@+id/appointment_image"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_7sdp"
+            android:background="@drawable/ic_baseline_account_circle_24"
+            />
+
+        <TextView
+            android:id="@+id/tv_namem"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/appointment_image"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/Full_name"/>
+
+        <TextView
+            android:id="@+id/Time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_namem"
+            app:layout_constraintStart_toEndOf="@id/appointment_image"
+            android:text="@string/time"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginStart="@dimen/_10sdp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/Constraint12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/constraint11"
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
+
+        <Button
+            android:id="@+id/Call"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7sdp"
+            android:text="@string/Call"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_weight="1"
+            app:layout_constraintVertical_bias="0.0"
+            android:backgroundTint="@color/green"
+            android:drawableLeft="@drawable/phone_white"
+            />
+
+        <Button
+            android:id="@+id/Camera"
+            android:text="@string/Camera"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="@dimen/_7sdp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/lightblue"
+            app:layout_constraintStart_toEndOf="@id/Call"
+            android:drawableLeft="@drawable/camera"
+             />
+
+        <Button
+            android:id="@+id/Cancel"
+            android:text="@string/Remove"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="@dimen/_7sdp"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@id/Camera"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            android:backgroundTint="@color/red"
+            android:drawableLeft="@drawable/delete"
+            android:layout_marginEnd="@dimen/_10sdp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

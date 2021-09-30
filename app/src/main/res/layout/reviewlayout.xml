@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_7sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/review_image"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_7sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/ic_baseline_account_circle_24"
+        />
+
+    <TextView
+        android:id="@+id/review_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/review_image"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:text="@string/Full_name"/>
+
+    <TextView
+        android:id="@+id/review_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/review_name"
+        app:layout_constraintStart_toEndOf="@id/review_image"
+        android:text="@string/Message"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginStart="@dimen/_10sdp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
