@@ -4,12 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2703125" />
+        <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/add.xml" value="0.2703125" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/backgroung_review.xml" value="0.2638888888888889" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/bg_iv.xml" value="0.2638888888888889" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/bg_linear_layout.xml" value="0.2638888888888889" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/button_background.xml" value="0.18645833333333334" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/check.xml" value="0.18645833333333334" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/error.xml" value="0.2703125" />
+        <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/ic_addsvg.xml" value="0.2703125" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/ic_baseline_account_circle_24.xml" value="0.2703125" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.2703125" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/drawable/ic_history.xml" value="0.18645833333333334" />
@@ -45,7 +47,7 @@
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_dashboard.xml" value="0.25416666666666665" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_doctor_history.xml" value="0.19947916666666668" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_doctor_home.xml" value="0.24045801526717558" />
-        <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_doctor_profile.xml" value="0.2" />
+        <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_doctor_profile.xml" value="0.264" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_doctor_review.xml" value="0.25416666666666665" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_entire.xml" value="0.22447916666666667" />
         <entry key="..\:/Android_Projects/Project/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />

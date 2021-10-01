@@ -39,10 +39,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val sliderItems : MutableList<SliderItem> = ArrayList()
-
         sliderItems.add(SliderItem(R.drawable.slider1))
         sliderItems.add(SliderItem(R.drawable.slider2))
         sliderItems.add(SliderItem(R.drawable.slider3))
+        sliderItems.add(SliderItem(R.drawable.doctorimage))
 
         _binding?.Viewpager?.adapter = SliderAdapter(sliderItems, _binding!!.Viewpager)
         _binding?.Viewpager?.clipToPadding = false

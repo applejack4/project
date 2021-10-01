@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.log
 
 
@@ -61,6 +62,8 @@ class DoctorHome : Fragment() {
     private var imageUri : Uri ?= null
     private lateinit var currentPhotoPath : String
     private lateinit var listUserId : String
+    var i : Int = 1
+    var E : Int = 1
 
     companion object {
         const val MOBILE_PHONE_PERMISSION = 1
@@ -470,10 +473,12 @@ class DoctorHome : Fragment() {
                         storageRef.child(id).child(f.name).downloadUrl.addOnSuccessListener {
                             val imageData: ImageModel = ImageModel(it.toString(), currentDate, currentTime)
 
+
                             firebaseDatabase.child("Users")
                                 .child(listUserId)
-                                .child("Medical_Records").child(id).push()
+                                .child("Medical_Records").child(id).child(i.toString())
                                 .setValue(imageData).addOnSuccessListener {
+                                    i++
                                     Entryrecord(contentUri, progressDialog, name, clinic, listUserId, id, f.name)
                                 }
                         }.addOnFailureListener {
@@ -568,10 +573,11 @@ class DoctorHome : Fragment() {
                 val imageData : DetailImageModel = DetailImageModel(it.toString(), currentDate.toString(), currentTime.toString(), name, clinic)
                 firebaseDatabase.child("Users")
                     .child(listUserId)
-                    .child("Medical_Records").child("Entire_Records").push()
+                    .child("Medical_Records").child("Entire_Records").child(E.toString())
                     .setValue(imageData).addOnSuccessListener {
                         if(dialog.isShowing)
                             dialog.dismiss()
+                        E++
                         Toast.makeText(context, "Images Updated Successfully",Toast.LENGTH_LONG).show()
                     }
             }.addOnFailureListener {

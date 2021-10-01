@@ -14,7 +14,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.project.Constants.AppConstants
 import com.example.project.R
 import com.example.project.View.Activities.DoctorMainPage
-import com.example.project.View.Activities.MainUserPage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -49,9 +48,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             {
                 createNormalNotification(title!!, message!!, hisId!!, hisImage!!)
             }
-
         }
-
     }
 
     fun updateToken(token : String){

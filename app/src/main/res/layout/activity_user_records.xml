@@ -58,6 +58,13 @@
             android:background="@drawable/phone" />
     </RelativeLayout>
 
+    <LinearLayout
+        app:layout_constraintTop_toBottomOf="@id/RelativeLayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecV"
         android:layout_width="match_parent"
@@ -68,5 +75,10 @@
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         app:layout_constraintTop_toBottomOf="@+id/RelativeLayout" />
+
+
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

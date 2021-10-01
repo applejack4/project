@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.example.project.Model.Doctor
 import com.example.project.Model.QrCode
+import com.example.project.R
 import com.example.project.View.Activities.ChangePassword
 import com.example.project.View.Activities.MainActivity
 import com.example.project.databinding.FragmentDoctorProfileBinding
@@ -37,6 +38,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -46,6 +48,7 @@ class DoctorProfile : Fragment() {
 
     companion object{
         const val GALLERY = 2
+        const val PROFILE = 3
     }
 
     private lateinit var currentPhotoPath : String
@@ -95,7 +98,7 @@ class DoctorProfile : Fragment() {
                             if(photoFile != null){
                                 val photoURI = FileProvider.getUriForFile(context!!, "com.example.android.fileProvide", photoFile)
                                 galIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                                startActivityForResult(galIntent, DoctorProfile.GALLERY)
+                                startActivityForResult(galIntent, GALLERY)
                             }else{
                                 return
                             }
@@ -124,7 +127,7 @@ class DoctorProfile : Fragment() {
                 .withListener(object : PermissionListener {
                     override fun onPermissionGranted(response: PermissionGrantedResponse) {
                         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        startActivityForResult(galleryIntent, GALLERY)
+                        startActivityForResult(galleryIntent, PROFILE)
                     }
 
                     override fun onPermissionDenied(response: PermissionDeniedResponse) {
@@ -154,6 +157,7 @@ class DoctorProfile : Fragment() {
                         _binding.DoctorPermanentStatus.text = details.hospitalStatus
                         _binding.DoctorPermanentMobile.text = details.mobile
                         _binding.UpiPaymentPermanent.text = details.upiPay
+                        Picasso.get().load(details.profilePicture).placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.ImageProfile)
                     }
                 }
             }
@@ -360,6 +364,34 @@ class DoctorProfile : Fragment() {
                                         }
                                 }
                             }
+                    }
+                }
+            }
+            if(requestCode == PROFILE){
+                if(requestCode == GALLERY){
+                    data?.let {
+                        progressDialog.show()
+                        val selectedPhotoUri = data.data
+                        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+                        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
+                        val storageRef = storageReference!!.child(currentId.toString())
+                        if (selectedPhotoUri != null) {
+                            storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
+                                storageRef.downloadUrl.addOnSuccessListener {
+                                    val qrcode : QrCode = QrCode(it.toString())
+                                    firebaseDatabase.child("Doctor")
+                                        .child(currentId.toString())
+                                        .child("ProfilePic").setValue(qrcode).addOnSuccessListener {
+                                            _binding.ImageProfile.setImageURI(selectedPhotoUri)
+                                            Toast.makeText(context, "QR-Code Uploaded Successfully", Toast.LENGTH_LONG).show()
+                                            progressDialog.dismiss()
+                                        }.addOnFailureListener {
+                                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                                            progressDialog.dismiss()
+                                        }
+                                }
+                            }
+                        }
                     }
                 }
             }
