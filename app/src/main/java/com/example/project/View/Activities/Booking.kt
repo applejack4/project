@@ -9,7 +9,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.android.volley.DefaultRetryPolicy
@@ -52,6 +51,9 @@ class Booking : AppCompatActivity() {
     private lateinit var _binding : ActivityBookingBinding
     private var hisId : String ?= null
 
+    private var name : String ?= null
+    private var image : String ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
@@ -70,6 +72,12 @@ class Booking : AppCompatActivity() {
         val builder = AlertDialog.Builder(this@Booking)
         builder.setView(view)
 
+        firebaseDatabase.child("Doctor").child(myId).get().addOnSuccessListener {
+            if(it.exists()){
+                name = it.child("firstname").toString()
+                image =it.child("profilePicture").toString()
+            }
+        }
 
         dialog = Dialog(this@Booking)
         dialog.setContentView(R.layout.successfull)
@@ -312,6 +320,8 @@ class Booking : AppCompatActivity() {
         }
     }
 
+
+
     private fun getToken() {
         val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").child("Doctor").child(hisId!!)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -323,8 +333,8 @@ class Booking : AppCompatActivity() {
                     val data = JSONObject()
 
                     data.put("hisId", myId)
-                    data.put("hisImage", "Image")
-                    data.put("title", "Suhail Mohammad")
+                    data.put("hisImage", image)
+                    data.put("title", name)
                     data.put("message", "Booked an appointment")
 
                     to.put("to", token)
