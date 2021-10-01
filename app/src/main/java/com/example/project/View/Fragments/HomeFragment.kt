@@ -39,10 +39,9 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val sliderItems : MutableList<SliderItem> = ArrayList()
-        sliderItems.add(SliderItem(R.drawable.slider1))
-        sliderItems.add(SliderItem(R.drawable.slider2))
-        sliderItems.add(SliderItem(R.drawable.slider3))
-        sliderItems.add(SliderItem(R.drawable.doctorimage))
+        sliderItems.add(SliderItem(R.drawable.appointmentconfirmations))
+        sliderItems.add(SliderItem(R.drawable.digitalrecord))
+        sliderItems.add(SliderItem(R.drawable.doctorupdate))
 
         _binding?.Viewpager?.adapter = SliderAdapter(sliderItems, _binding!!.Viewpager)
         _binding?.Viewpager?.clipToPadding = false
@@ -56,8 +55,7 @@ class HomeFragment : Fragment() {
             val r = 1 - abs(position)
             page.scaleY = (0.85 + r * 0.25f).toFloat()
         }
-
-
+        
         _binding?.Viewpager?.setPageTransformer(compositePageTransformer)
         _binding?.Viewpager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {

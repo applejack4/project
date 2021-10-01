@@ -12,7 +12,6 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.example.project.R
-import com.example.project.View.Fragments.DoctorHome
 import com.example.project.databinding.ActivitySplashScreenBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -20,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 
 @SuppressLint("CustomSplashScreen")
-public class SplashScreen : AppCompatActivity() {
+class SplashScreen : AppCompatActivity() {
     private lateinit var _binding : ActivitySplashScreenBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var allUsersDefaultValue : DatabaseReference
