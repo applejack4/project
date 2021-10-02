@@ -55,7 +55,7 @@ class HomeFragment : Fragment() {
             val r = 1 - abs(position)
             page.scaleY = (0.85 + r * 0.25f).toFloat()
         }
-        
+
         _binding?.Viewpager?.setPageTransformer(compositePageTransformer)
         _binding?.Viewpager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
@@ -71,7 +71,7 @@ class HomeFragment : Fragment() {
 
         sliderHandler.postDelayed(sliderRunnable, 3000)
 
-        _binding!!.MyDoctorsVisited.setOnClickListener {
+        _binding!!.historylll1.setOnClickListener {
             val intent = Intent(context, SpecificDoctorList::class.java)
             intent.putExtra("item", "My Doctors/Records")
             startActivity(intent)

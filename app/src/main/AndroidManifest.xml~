@@ -96,6 +96,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- <service -->
+        <!-- android:name=".View.Activities.services.MyFirebaseInstanceIDService" -->
+        <!-- android:exported="false" -->
+        <!-- tools:ignore="Instantiatable"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/> -->
+        <!-- </intent-filter> -->
+        <!-- </service> -->
         <service
             android:name=".Services.MyFirebaseMessagingService"
             android:exported="false">

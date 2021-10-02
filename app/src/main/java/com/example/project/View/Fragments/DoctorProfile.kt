@@ -12,17 +12,20 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.service.voice.VoiceInteractionSession
 import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import com.example.project.Model.Doctor
 import com.example.project.Model.QrCode
-import com.example.project.R
+import com.example.project.Model.profileImage
 import com.example.project.View.Activities.ChangePassword
 import com.example.project.View.Activities.MainActivity
 import com.example.project.databinding.FragmentDoctorProfileBinding
@@ -44,6 +47,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class DoctorProfile : Fragment() {
 
     companion object{
@@ -51,15 +55,16 @@ class DoctorProfile : Fragment() {
         const val PROFILE = 3
     }
 
-    private lateinit var currentPhotoPath : String
+    private var currentPhotoPath : String ?= null
     private lateinit var imageUri : Uri
-
-
     private lateinit var auth : FirebaseAuth
     private lateinit var _binding : FragmentDoctorProfileBinding
     private lateinit var firebaseDatabase: DatabaseReference
     private var storageReference : StorageReference ?= null
     private var currentId : String ?= null
+    private lateinit var f : File
+    val fragment : DoctorProfile = this
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +77,6 @@ class DoctorProfile : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDoctorProfileBinding.inflate(LayoutInflater.from(context), container, false)
-        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         return _binding.root
     }
 
@@ -80,9 +84,26 @@ class DoctorProfile : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        val u : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
+
+        firebaseDatabase.child("Doctor").child(u).child("ProPic").get().addOnSuccessListener {
+            if(it.exists()){
+                val image : String = it.child("profileimage").value.toString()
+                if(image != null){
+                    Picasso.get().load(image).into(_binding.ImageProfile)
+                    println("Image $image")
+                }else{
+                    return@addOnSuccessListener
+                }
+            }else{
+                return@addOnSuccessListener
+            }
+        }
+
         _binding.GalleryQrCode.setOnClickListener {
             Dexter.withContext(context).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,).withListener(object : MultiplePermissionsListener {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE).withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                     if(report!!.areAllPermissionsGranted()){
                         val galIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -98,12 +119,14 @@ class DoctorProfile : Fragment() {
                             if(photoFile != null){
                                 val photoURI = FileProvider.getUriForFile(context!!, "com.example.android.fileProvide", photoFile)
                                 galIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                                startActivityForResult(galIntent, GALLERY)
+//                                startActivityForResult(galIntent, GALLERY)
+                                activityResult(galIntent, GALLERY)
                             }else{
                                 return
                             }
+                        }else{
+                            return
                         }
-
                     }else{
                         showRationalDialogForPermission()
                     }
@@ -119,29 +142,46 @@ class DoctorProfile : Fragment() {
         }
 
 
-        val userid : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         _binding.changeProfilePicture.setOnClickListener {
             Dexter.withContext(context)
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        startActivityForResult(galleryIntent, PROFILE)
-                    }
-
-                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
-                        Toast.makeText(context, "Permission has been denied", Toast.LENGTH_LONG).show()
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(object : MultiplePermissionsListener{
+                    override fun onPermissionsChecked(report : MultiplePermissionsReport?) {
+                        if(report!!.areAllPermissionsGranted()){
+                            val imageIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                            if(context?.let { imageIntent.resolveActivity(it.packageManager) } != null){
+                                var photofile: File? = null
+                                try {
+                                    photofile = createImageFile()
+                                } catch (ex: IOException) {
+                                    // Error occurred while creating the File
+                                    Log.i("Error","Exception occurred is ${ex.message}")
+                                }
+                                if(photofile != null){
+                                    val photoURI = FileProvider.getUriForFile(context!!, "com.example.android.fileProvide", photofile)
+                                    imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                                    activityResult(imageIntent, PROFILE)
+                                }else{
+                                    return
+                                }
+                            }
+                        }else{
+                            showRationalDialogForPermission()
+                        }
                     }
 
                     override fun onPermissionRationaleShouldBeShown(
-                        permission: PermissionRequest,
-                        token: PermissionToken
+                        p0: MutableList<PermissionRequest>?,
+                        p1: PermissionToken?
                     ) {
-                        showRationalForPermissionMobile()
+                        showRationalDialogForPermission()
                     }
-                }).check()
+                }).onSameThread().check()
         }
+
+
+        val userid : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
 
         auth = FirebaseAuth.getInstance()
@@ -157,7 +197,7 @@ class DoctorProfile : Fragment() {
                         _binding.DoctorPermanentStatus.text = details.hospitalStatus
                         _binding.DoctorPermanentMobile.text = details.mobile
                         _binding.UpiPaymentPermanent.text = details.upiPay
-                        Picasso.get().load(details.profilePicture).placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.ImageProfile)
+                        Picasso.get().load(details.profilePicture).into(_binding.ImageProfile)
                     }
                 }
             }
@@ -165,8 +205,6 @@ class DoctorProfile : Fragment() {
             override fun onCancelled(error: DatabaseError) {
                 Log.i("Error", error.message)
             }
-
-
         })
 
         _binding.ButtonEditProfile.setOnClickListener {
@@ -334,69 +372,83 @@ class DoctorProfile : Fragment() {
         }.show()
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val f: File = File(currentPhotoPath)
-        val contentUri = Uri.fromFile(f) ?: return
         val progressDialog = ProgressDialog(context)
         progressDialog.setMessage("Uploading QrCode...")
         progressDialog.setCancelable(false)
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == GALLERY){
-                data?.let {
-                    progressDialog.show()
-                    val selectedPhotoUri = data.data
-                    firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                    storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("QrCodes")
-                    val storageRef = storageReference!!.child(currentId.toString())
-                        if (selectedPhotoUri != null) {
-                            storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
-                                storageRef.downloadUrl.addOnSuccessListener {
-                                    val qrcode : QrCode = QrCode(it.toString())
-                                    firebaseDatabase.child("Doctor")
-                                        .child(currentId.toString())
-                                        .child("Qrcode").setValue(qrcode).addOnSuccessListener {
-                                            Toast.makeText(context, "QR-Code Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
-                                        }.addOnFailureListener {
-                                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
+
+        when(requestCode){
+            requestCode ->{
+                if(requestCode == GALLERY){
+                    if(resultCode == Activity.RESULT_OK){
+                        if(data != null){
+                            data.let {
+                                progressDialog.show()
+                                val selectedPhotoUri = data.data
+                                firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+                                storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("QrCodes")
+                                val storageRef = storageReference!!.child(currentId.toString())
+                                if (selectedPhotoUri != null) {
+                                    storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
+                                        storageRef.downloadUrl.addOnSuccessListener {
+                                            val qrcode : QrCode = QrCode(it.toString())
+                                            firebaseDatabase.child("Doctor")
+                                                .child(currentId.toString())
+                                                .child("Qrcode").setValue(qrcode).addOnSuccessListener {
+                                                    Toast.makeText(context, "QR-Code Uploaded Successfully", Toast.LENGTH_LONG).show()
+                                                    progressDialog.dismiss()
+                                                }.addOnFailureListener {
+                                                    Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                                                    progressDialog.dismiss()
+                                                }
                                         }
+                                    }
+                                }else{
+                                    return@let
                                 }
                             }
+                        }else{
+                            return
+                        }
+                    }else if(resultCode == Activity.RESULT_CANCELED){
+                        println("result cancelled.")
                     }
                 }
-            }
-            if(requestCode == PROFILE){
-                if(requestCode == GALLERY){
-                    data?.let {
-                        progressDialog.show()
-                        val selectedPhotoUri = data.data
-                        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
-                        val storageRef = storageReference!!.child(currentId.toString())
-                        if (selectedPhotoUri != null) {
-                            storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
-                                storageRef.downloadUrl.addOnSuccessListener {
-                                    val qrcode : QrCode = QrCode(it.toString())
-                                    firebaseDatabase.child("Doctor")
-                                        .child(currentId.toString())
-                                        .child("ProfilePic").setValue(qrcode).addOnSuccessListener {
-                                            _binding.ImageProfile.setImageURI(selectedPhotoUri)
-                                            Toast.makeText(context, "QR-Code Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
-                                        }.addOnFailureListener {
-                                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
-                                        }
+                if(requestCode == PROFILE){
+                    if(resultCode == Activity.RESULT_OK){
+                        data?.let {
+                            progressDialog.show()
+                            val selectedPhotoUri = data.data
+                            firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+                            storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
+                            val storageRef = storageReference!!.child(currentId.toString())
+                            if (selectedPhotoUri != null) {
+                                storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
+                                    storageRef.downloadUrl.addOnSuccessListener {
+                                        val profileImage : profileImage = profileImage(it.toString())
+                                        firebaseDatabase.child("Doctor")
+                                            .child(currentId.toString())
+                                            .child("ProPic").setValue(profileImage).addOnSuccessListener {
+                                                _binding.ImageProfile.setImageURI(selectedPhotoUri)
+                                                Toast.makeText(context, "Profile picture Uploaded Successfully", Toast.LENGTH_LONG).show()
+                                                progressDialog.dismiss()
+                                            }.addOnFailureListener {
+                                                Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                                                progressDialog.dismiss()
+                                            }
+                                    }
                                 }
+                            }else{
+                                return println("The data isn't getting stored...")
                             }
                         }
+                    }else if(resultCode == Activity.RESULT_CANCELED){
+                        println("result cancelled.")
                     }
                 }
             }
-        }else if (resultCode == Activity.RESULT_CANCELED){
-            Log.e("Error", "User Cancelled")
         }
     }
 
@@ -441,4 +493,7 @@ class DoctorProfile : Fragment() {
     }
 
 
+    private fun activityResult(intent : Intent, requestcode : Int){
+        startActivityForResult(intent, requestcode)
+    }
 }

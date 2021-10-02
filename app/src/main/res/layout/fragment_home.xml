@@ -69,6 +69,7 @@
                         android:layout_marginBottom="@dimen/_15sdp"
                         android:textColor="@color/black"/>
                     <LinearLayout
+                        android:id="@+id/historylll1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
@@ -674,9 +675,11 @@
                         android:gravity="center">
                         <ImageView
                             android:id="@+id/Other"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="@dimen/_70sdp"
+                            android:layout_height="@dimen/_70sdp"
                             android:text="Other"
+                            android:background="@drawable/other"
+                            android:layout_marginBottom="@dimen/_10sdp"
                             android:textSize="13sp"
                             />
                     </LinearLayout>

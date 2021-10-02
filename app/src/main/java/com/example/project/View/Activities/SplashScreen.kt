@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 
 @SuppressLint("CustomSplashScreen")
-class SplashScreen : AppCompatActivity() {
+public class SplashScreen : AppCompatActivity() {
     private lateinit var _binding : ActivitySplashScreenBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var allUsersDefaultValue : DatabaseReference
