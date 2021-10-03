@@ -29,7 +29,6 @@ class SpecificDoctorList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivitySpecificDoctorListBinding.inflate(layoutInflater)
         setContentView(_binding.root)
-        onResume()
     }
 
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")

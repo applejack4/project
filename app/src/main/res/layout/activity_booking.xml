@@ -114,6 +114,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:text="@string/Appointment"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_8sdp" />
 
             <Button
@@ -122,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/Review"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_10sdp" />
 
 

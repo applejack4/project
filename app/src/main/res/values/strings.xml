@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project</string>
+    <string name="app_name">Medko</string>
     <string name="Login_Title">Login</string>
     <string name="E_mail">E-Mail</string>
     <string name="Password">Password</string>
@@ -67,4 +67,6 @@
     <string name="Changepass">Change Password</string>
     <string name="oldpass">Enter Old password</string>
     <string name="Newpass">Enter New Password</string>
+    <string name="away">The doctor is away/not in clinic</string>
+    <string name="notified">We\'ve notified the doctor you made an appointment.</string>
 </resources>

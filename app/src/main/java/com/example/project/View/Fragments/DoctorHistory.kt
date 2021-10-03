@@ -56,8 +56,6 @@ class DoctorHistory : Fragment() {
         val model : HistoryViewModel by viewModels()
         val adapter = HistoryAdapter()
         adapter.passingFragment(this)
-        _binding!!.RecyclerView.layoutManager = LinearLayoutManager(activity)
-
 
         model.getTitleHistory().observe(viewLifecycleOwner, {
             history ->
@@ -80,6 +78,14 @@ class DoctorHistory : Fragment() {
                      }
                     }
                 }
+
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
+                _binding?.RecyclerView?.adapter = adapter
+                _binding?.RecyclerView?.setHasFixedSize(true)
+                _binding?.RecyclerView?.layoutManager = layoutManager
             }
         })
     }

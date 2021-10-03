@@ -80,19 +80,6 @@ class DoctorProfile : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
-        val u : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
-        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
-
-        firebaseDatabase.child("Doctor").child(u).child("ProPic").get().addOnSuccessListener {
-            if(it.exists()){
-                val image : String = it.child("profileimage").value.toString()
-                Picasso.get().load(image).into(_binding.ImageProfile)
-            }else{
-                return@addOnSuccessListener
-            }
-        }
-
         _binding.GalleryQrCode.setOnClickListener {
             Dexter.withContext(context).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE).withListener(object : MultiplePermissionsListener {
@@ -188,7 +175,7 @@ class DoctorProfile : Fragment() {
                         _binding.DoctorPermanentStatus.text = details.hospitalStatus
                         _binding.DoctorPermanentMobile.text = details.mobile
                         _binding.UpiPaymentPermanent.text = details.upiPay
-                        Picasso.get().load(details.profilePicture).into(_binding.ImageProfile)
+                        Picasso.get().load(details.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.into(_binding.ImageProfile)
                     }
                 }
             }
@@ -423,10 +410,9 @@ class DoctorProfile : Fragment() {
                             if (selectedPhotoUri != null) {
                                 storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
                                     storageRef.downloadUrl.addOnSuccessListener {
-                                        val profileImage : profileImage = profileImage(it.toString())
+                                        val profileImage : String = it.toString()
                                         firebaseDatabase.child("Doctor")
-                                            .child(currentId.toString())
-                                            .child("profilePicture").setValue(profileImage).addOnSuccessListener {
+                                            .child(currentId.toString()).child("profilePicture").setValue(profileImage).addOnSuccessListener {
                                                 _binding.ImageProfile.setImageURI(selectedPhotoUri)
                                                 Toast.makeText(context, "Profile picture Uploaded Successfully", Toast.LENGTH_LONG).show()
                                                 imageDialog.dismiss()

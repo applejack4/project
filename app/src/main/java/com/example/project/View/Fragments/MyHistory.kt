@@ -57,7 +57,6 @@ class MyHistory : Fragment() {
         val adapter = MyRecordAdapter()
         adapter.passingFragment(this)
         _binding.RecyclerViewMyHistory.adapter = adapter
-        _binding.RecyclerViewMyHistory.layoutManager = LinearLayoutManager(context)
 
         model.getData(id.toString()).observe(viewLifecycleOwner, {
                 history ->
@@ -80,6 +79,13 @@ class MyHistory : Fragment() {
                         }
                     }
                 }
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
+                _binding.RecyclerViewMyHistory.adapter = adapter
+                _binding.RecyclerViewMyHistory.setHasFixedSize(true)
+                _binding.RecyclerViewMyHistory.layoutManager = layoutManager
             }
         })
     }

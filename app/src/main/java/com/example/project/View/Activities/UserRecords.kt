@@ -66,7 +66,7 @@ class UserRecords : AppCompatActivity() {
         }
 
         _binding.DoctorNameDetail.text = name
-        Picasso.get().load(profilePic).placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.DoctorImageDetail)
+        Picasso.get().load(profilePic)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(_binding.DoctorImageDetail)
 
         val id : String = intent.getStringExtra("id").toString()
         val model : MyRecordViewModel by viewModels()
@@ -92,10 +92,16 @@ class UserRecords : AppCompatActivity() {
                         }
                     }
             }
+
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(this)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
                 adapter.passingActivity(this)
                 _binding.RecV.adapter = adapter
                 _binding.RecV.setHasFixedSize(true)
-                _binding.RecV.layoutManager = LinearLayoutManager(this)
+                _binding.RecV.layoutManager = layoutManager
+
 
             }
         })

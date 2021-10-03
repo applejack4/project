@@ -1,6 +1,7 @@
 package com.example.project.View.Activities
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -29,6 +30,12 @@ class DoctorRegistration : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val progress = ProgressDialog(this@DoctorRegistration)
+        progress.setMessage("Registering")
+        progress.setCancelable(false)
+
+
         binding = ActivityDoctorRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
@@ -71,6 +78,7 @@ class DoctorRegistration : AppCompatActivity() {
                 }
                 else ->{
                     if(password == confirmPassword){
+                        progress.show()
                         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
                                 task ->
                             run {
@@ -85,8 +93,10 @@ class DoctorRegistration : AppCompatActivity() {
                                                     task1 ->
                                                 run {
                                                     if (task1.isSuccessful) {
+                                                        progress.dismiss()
                                                         functionIntent()
                                                     }else{
+                                                        progress.dismiss()
                                                         Toast.makeText(this@DoctorRegistration,
                                                             task1.exception?.message,Toast.LENGTH_LONG).show()
                                                     }
@@ -110,7 +120,7 @@ class DoctorRegistration : AppCompatActivity() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if(it.isComplete){
                 token =  it.result.toString()
-                println("This is the uniqueid:----->$token")
+                println("Token is $token")
             }
         }.addOnFailureListener {
             println("Failed Message:${it.message}")

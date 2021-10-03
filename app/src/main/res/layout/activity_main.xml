@@ -118,6 +118,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/Login"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ForgotPassword" />
 
@@ -140,6 +141,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view"
+        android:textColor="@color/white"
         android:text="@string/User_Register"/>
 
     <Button
@@ -150,6 +152,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Btn_User_Register"
+        android:textColor="@color/white"
         android:text="@string/Doctor_register"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

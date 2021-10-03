@@ -39,21 +39,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val title = map["title"]
             val message = map["message"]
             val hisId = map["hisId"]
-            val hisImage = map["hisImage"]
-
 
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
-                createOreoNotification(title!!, message!!, hisId!!, hisImage!!)
+                createOreoNotification(title!!, message!!, hisId!!)
             } else
             {
-                createNormalNotification(title!!, message!!, hisId!!, hisImage!!)
+                createNormalNotification(title!!, message!!, hisId!!)
             }
         }
     }
 
     fun updateToken(token : String){
         val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
-            .getReference("AppUsers").child("User")
+            .getReference("AppUsers").child("Doctor")
             .child(currentId)
 
         val map : MutableMap<String, Any> = HashMap()
@@ -66,8 +64,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun createNormalNotification(
         title: String,
         message: String,
-        hisId: String,
-        hisImage: String
+        hisId: String
     ) {
 
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -84,7 +81,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, DoctorMainPage::class.java)
 
         intent.putExtra("hisId", hisId)
-        intent.putExtra("hisImage", hisImage)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -99,8 +95,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun createOreoNotification(
         title: String,
         message: String,
-        hisId: String,
-        hisImage: String
+        hisId: String
     ) {
 
         val channel = NotificationChannel(
@@ -120,7 +115,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, DoctorMainPage::class.java)
 
         intent.putExtra("hisId", hisId)
-        intent.putExtra("hisImage", hisImage)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -136,5 +130,4 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         manager.notify(100, notification)
     }
-
 }

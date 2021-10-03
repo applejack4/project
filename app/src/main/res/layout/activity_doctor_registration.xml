@@ -197,6 +197,7 @@
         app:layout_constraintTop_toBottomOf="@id/Confirm_password"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@color/white"
         android:layout_marginTop="@dimen/_5sdp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

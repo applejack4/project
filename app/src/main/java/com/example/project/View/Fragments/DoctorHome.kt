@@ -122,7 +122,11 @@ class DoctorHome : Fragment() {
                 if(doctor != null){
                     _binding?.tvDoctorHomeName?.text = doctor.DoctorName
                     _binding?.tvDoctorClinicName?.text = doctor.ClinicName
-                    Picasso.get().load(doctor.profilePicture).into(_binding?.ivDoctorHomeImage)
+                    if(_binding?.ivDoctorHomeImage != null){
+                        Picasso.get()?.load(doctor.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.into(_binding?.ivDoctorHomeImage)
+                    }else{
+                        return
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -261,7 +265,7 @@ class DoctorHome : Fragment() {
                  ) {
                      showRationalForPermissionMobile()
                  }
-             }).check()
+             }).onSameThread().check()
     }
 
     fun deleteItem(list : ArrayList<AppointConstructor>, position : Int, id : String){
@@ -460,6 +464,9 @@ class DoctorHome : Fragment() {
                 val currentDate = sdf.format(Date()).toString()
                 val currentTime = tf.format(Date()).toString()
 
+                val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
+                val CD= sdfd.format(Date())
+
                 firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
                 storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
                 val storageRef = storageReference!!.child(listUserId)
@@ -476,9 +483,8 @@ class DoctorHome : Fragment() {
 
                             firebaseDatabase.child("Users")
                                 .child(listUserId)
-                                .child("Medical_Records").child(id).child(i.toString())
+                                .child("Medical_Records").child(id).child(CD)
                                 .setValue(imageData).addOnSuccessListener {
-                                    i++
                                     Entryrecord(contentUri, progressDialog, name, clinic, listUserId, id, f.name)
                                 }
                         }.addOnFailureListener {
@@ -562,8 +568,9 @@ class DoctorHome : Fragment() {
         val tf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date()).toString()
         val currentTime = tf.format(Date()).toString()
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("YYYY-MM-DD hh:mm")
+
+        val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
+        val CD= sdfd.format(Date())
 
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
@@ -573,11 +580,10 @@ class DoctorHome : Fragment() {
                 val imageData : DetailImageModel = DetailImageModel(it.toString(), currentDate.toString(), currentTime.toString(), name, clinic)
                 firebaseDatabase.child("Users")
                     .child(listUserId)
-                    .child("Medical_Records").child("Entire_Records").child(E.toString())
+                    .child("Medical_Records").child("Entire_Records").child(CD)
                     .setValue(imageData).addOnSuccessListener {
                         if(dialog.isShowing)
                             dialog.dismiss()
-                        E++
                         Toast.makeText(context, "Images Updated Successfully",Toast.LENGTH_LONG).show()
                     }
             }.addOnFailureListener {

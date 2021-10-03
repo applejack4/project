@@ -21,7 +21,8 @@ import com.example.project.viewModel.ReviewViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DoctorReview : Fragment() {
     private lateinit var _binding : FragmentReviewFragmentBinding
@@ -42,13 +43,12 @@ class DoctorReview : Fragment() {
         return _binding.root
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onResume() {
         super.onResume()
         val model : ReviewViewModel by viewModels()
         auth  = FirebaseAuth.getInstance()
         val adapter = ReviewAdapter(this)
-        _binding.RecView.layoutManager = LinearLayoutManager(activity)
 
         model.getReviews().observe(viewLifecycleOwner, {
             reviews ->
@@ -70,6 +70,14 @@ class DoctorReview : Fragment() {
                         }
                     }
                 }
+
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
+                _binding.RecView.adapter = adapter
+                _binding.RecView.setHasFixedSize(true)
+                _binding.RecView.layoutManager = layoutManager
             }
         })
     }

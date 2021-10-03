@@ -34,7 +34,6 @@ class EntireFragment : Fragment() {
         val model : MyRecordViewModel by viewModels()
         val adapter = EntireRecordAdapter(this@EntireFragment)
         _binding.RecyclerViewEntireHistory.adapter = adapter
-        _binding.RecyclerViewEntireHistory.layoutManager = LinearLayoutManager(context)
 
         model.entireData(id.toString()).observe(viewLifecycleOwner, {
                 history ->
@@ -55,6 +54,13 @@ class EntireFragment : Fragment() {
                         }
                     }
                 }
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
+                _binding.RecyclerViewEntireHistory.adapter = adapter
+                _binding.RecyclerViewEntireHistory.setHasFixedSize(true)
+                _binding.RecyclerViewEntireHistory.layoutManager = layoutManager
             }
         })
     }

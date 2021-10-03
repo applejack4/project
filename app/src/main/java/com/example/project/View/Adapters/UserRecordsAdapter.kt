@@ -36,7 +36,7 @@ class UserRecordsAdapter : RecyclerView.Adapter<UserRecordsAdapter.MyViewHolder>
         val doctor : Doctor = list[position]
         holder.hospitalName.text= doctor.ClinicName
         holder.doctorName.text = doctor.DoctorName
-        Picasso.get().load(doctor.profilePicture).placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(holder.image)
 
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, UserRecords::class.java)

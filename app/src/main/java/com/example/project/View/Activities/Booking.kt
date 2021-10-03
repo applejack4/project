@@ -48,6 +48,7 @@ class Booking : AppCompatActivity() {
 
     private lateinit var dialog : Dialog
     private lateinit var pendingdialog : Dialog
+    private lateinit var cancelledDialog : Dialog
     private lateinit var _binding : ActivityBookingBinding
     private var hisId : String ?= null
 
@@ -72,7 +73,7 @@ class Booking : AppCompatActivity() {
         val builder = AlertDialog.Builder(this@Booking)
         builder.setView(view)
 
-        firebaseDatabase.child("Doctor").child(myId).get().addOnSuccessListener {
+        firebaseDatabase.child("Users").child(myId).get().addOnSuccessListener {
             if(it.exists()){
                 name = it.child("firstname").value.toString()
                 image =it.child("profilePicture").value.toString()
@@ -82,9 +83,11 @@ class Booking : AppCompatActivity() {
         dialog = Dialog(this@Booking)
         dialog.setContentView(R.layout.successfull)
 
-
         pendingdialog = Dialog(this@Booking)
         pendingdialog.setContentView(R.layout.pending)
+
+        cancelledDialog = Dialog(this@Booking)
+        cancelledDialog.setContentView(R.layout.offlinedialog)
 
         _binding.Navigation.setOnNavigationItemSelectedListener {
             when(it.itemId){
@@ -164,7 +167,6 @@ class Booking : AppCompatActivity() {
                                                 pendingdialog.show()
                                             }
                                             if(!snapshot.exists()){
-                                                println("No it Doesn't Exist.")
                                                 firebaseDatabase.child("Users").child(currentUserId).get().addOnSuccessListener {
                                                         value ->
                                                     run {
@@ -227,7 +229,7 @@ class Booking : AppCompatActivity() {
                                             run {
                                                 if (task.isSuccessful) {
                                                     saveToUsersVisitedDoctors(currentUserId, doctorUserid)
-                                                    dialog.show()
+                                                    cancelledDialog.show()
                                                     getToken()
                                                 }
                                             }
@@ -261,6 +263,8 @@ class Booking : AppCompatActivity() {
             with(builder){
                 setPositiveButton("Submit"){ dialog, which ->
                     val result : String = editText.text.toString()
+                    val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
+                    val CD= sdfd.format(Date())
                     val reference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
                     when{
                         TextUtils.isEmpty(result) ->{
@@ -272,9 +276,10 @@ class Booking : AppCompatActivity() {
                                     if(result.isNotEmpty()) {
                                         val name: String = it.child("firstname").value.toString()
                                         val id: String = it.child("id").value.toString()
-                                        val reviewMode = ReviewMode(name, result, "null", id)
+                                        val image : String = it.child("profilePicture").value.toString()
+                                        val reviewMode = ReviewMode(name, result, image, id)
                                         reference.child("Doctor").child(doctorUserid)
-                                            .child("Review").child(id).setValue(reviewMode)
+                                            .child("Review").child(CD).setValue(reviewMode)
                                             .addOnSuccessListener {
                                                 dialog.dismiss()
                                                 Toast.makeText(
@@ -333,10 +338,13 @@ class Booking : AppCompatActivity() {
                     val data = JSONObject()
 
                     data.put("hisId", myId)
-                    data.put("hisImage", image)
                     data.put("title", name)
                     data.put("message", "Booked an appointment")
 
+
+
+                    println("name is $name , myId is $myId ")
+                    println("To Print is :$name and $image")
                     to.put("to", token)
                     to.put("data", data)
                     sendNotification(to)

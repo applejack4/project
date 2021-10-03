@@ -1,11 +1,15 @@
-name : Android build
+name : CI
 
-on : pull_request
+on :
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  build:
-
-    runs-on: windows-latest
+  lint:
+    runs-on: ubuntu-latest
 
     steps:
       -uses: actions/checkout@v1

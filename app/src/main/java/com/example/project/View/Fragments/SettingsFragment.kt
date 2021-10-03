@@ -27,6 +27,7 @@ import com.example.project.Model.Doctor
 import com.example.project.Model.QrCode
 import com.example.project.Model.User
 import com.example.project.Model.profileImage
+import com.example.project.R
 import com.example.project.View.Activities.ChangePassword
 import com.example.project.View.Activities.MainActivity
 import com.example.project.databinding.FragmentSettingsBinding
@@ -40,6 +41,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -127,8 +129,10 @@ class SettingFragment : Fragment() {
                     if(snapshot.exists()){
                         val user : User? = snapshot.getValue(User::class.java)
                         if (user != null) {
-                            _binding!!.UserPermanentName.text = user.firstname
-                            _binding!!.UserPermanentMobile.text = user.mobile
+                            _binding?.UserPermanentName?.text = user.firstname
+                            _binding?.UserPermanentMobile?.text = user.mobile
+                            Picasso.get().load(user.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(
+                                R.drawable.ic_baseline_account_circle_24)?.into(_binding?.ImageProfile)
                         }
                     }
                 }
@@ -277,7 +281,7 @@ class SettingFragment : Fragment() {
                         if (selectedPhotoUri != null) {
                             storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
                                 storageRef.downloadUrl.addOnSuccessListener {
-                                    val image : profileImage = profileImage(it.toString())
+                                    val image : String = it.toString()
                                     firebaseDatabase.child("Users")
                                         .child(currentId.toString())
                                         .child("profilePicture").setValue(image).addOnSuccessListener {

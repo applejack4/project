@@ -1,19 +1,18 @@
 package com.example.project.View.Activities
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Toast
-import com.example.project.R
 import com.example.project.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.messaging.FirebaseMessaging
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
  class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
@@ -24,6 +23,11 @@ import kotlin.collections.HashMap
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val progress = ProgressDialog(this@MainActivity)
+        progress.setMessage("Logging in.")
+        progress.setCancelable(false)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
@@ -55,6 +59,7 @@ import kotlin.collections.HashMap
                     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                         task ->
                         run {
+                            progress.show()
                             if (task.isSuccessful) {
                                 val currentUser = auth.currentUser!!.uid
                                 allUsersDefaultValue.child(currentUser).get().addOnSuccessListener {

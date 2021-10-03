@@ -5,5 +5,4 @@ class User (var id : String ?= null,
             var email : String ?= null,
             var mobile : String ?= null,
             var password : String ?= null,
-            var profilePicture : String ?= null,
-            var token : String ?= null)
+            var profilePicture : String ?= null)

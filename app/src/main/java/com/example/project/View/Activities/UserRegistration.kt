@@ -36,14 +36,6 @@ class UserRegistration : AppCompatActivity() {
         progress.setMessage("Registering")
         progress.setCancelable(false)
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener {
-            if(it.isComplete){
-                token =  it.result.toString()
-            }
-        }.addOnFailureListener {
-            println("Failed Message:${it.message}")
-        }
-
         binding.BtnRegister.setOnClickListener{
             val fullName = binding.TIEUsername.text.toString().trim(){ it < ' '}
             val eMail = binding.TIEEmail.text.toString().trim(){ it < ' '}
@@ -76,7 +68,7 @@ class UserRegistration : AppCompatActivity() {
                                 if (task.isSuccessful) {
                                     progress.show()
                                     val id = auth.currentUser!!.uid
-                                    val user = User(id, fullName, eMail, mobile, password, "null", token)
+                                    val user = User(id, fullName, eMail, mobile, password, "null")
                                     val allUser = AllUsers(id, "0")
                                     appUsers.child(id).setValue(user).addOnCompleteListener {
                                             it ->
