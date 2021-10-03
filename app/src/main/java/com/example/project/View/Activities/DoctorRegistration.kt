@@ -76,7 +76,7 @@ class DoctorRegistration : AppCompatActivity() {
                             run {
                                 if (task.isSuccessful) {
                                     val id = auth.currentUser!!.uid
-                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password,"null",  "0", "Available", "ybl@XXXXXXXX", token)
+                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password, "null", "0", "Available", "ybl@XXXXXXXX", token)
                                     val all_Users = AllUsers(id, "1")
                                     fields.child(speciality.toString()).child(id).setValue(doctor)
                                     appUsers.child(id).setValue(doctor).addOnCompleteListener {

@@ -1,3 +1,3 @@
 package com.example.project.Model
 
-class profileImage(var profilePicture : String ?= null)
+class profileImage(var Profileimage : String ?= null)
