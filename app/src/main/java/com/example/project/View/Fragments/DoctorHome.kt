@@ -122,7 +122,6 @@ class DoctorHome : Fragment() {
                 if(doctor != null){
                     _binding?.tvDoctorHomeName?.text = doctor.DoctorName
                     _binding?.tvDoctorClinicName?.text = doctor.ClinicName
-                    Picasso.get().load(doctor.profilePicture).into(_binding?.ivDoctorHomeImage)
                 }
             }
             override fun onCancelled(error: DatabaseError) {

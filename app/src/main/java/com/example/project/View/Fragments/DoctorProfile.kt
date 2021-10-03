@@ -12,12 +12,15 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.service.voice.VoiceInteractionSession
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.project.Model.Doctor
@@ -87,7 +90,12 @@ class DoctorProfile : Fragment() {
         firebaseDatabase.child("Doctor").child(u).child("ProPic").get().addOnSuccessListener {
             if(it.exists()){
                 val image : String = it.child("profileimage").value.toString()
-                Picasso.get().load(image).into(_binding.ImageProfile)
+                if(image != null){
+                    Picasso.get().load(image).into(_binding.ImageProfile)
+                    println("Image $image")
+                }else{
+                    return@addOnSuccessListener
+                }
             }else{
                 return@addOnSuccessListener
             }
@@ -111,6 +119,7 @@ class DoctorProfile : Fragment() {
                             if(photoFile != null){
                                 val photoURI = FileProvider.getUriForFile(context!!, "com.example.android.fileProvide", photoFile)
                                 galIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+//                                startActivityForResult(galIntent, GALLERY)
                                 activityResult(galIntent, GALLERY)
                             }else{
                                 return
@@ -367,12 +376,7 @@ class DoctorProfile : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val progressDialog = ProgressDialog(context)
-        val imageDialog = ProgressDialog(context)
-
         progressDialog.setMessage("Uploading QrCode...")
-        imageDialog.setMessage("Uploading Profile Picture...")
-
-        imageDialog.setCancelable(false)
         progressDialog.setCancelable(false)
 
         when(requestCode){
@@ -415,7 +419,7 @@ class DoctorProfile : Fragment() {
                 if(requestCode == PROFILE){
                     if(resultCode == Activity.RESULT_OK){
                         data?.let {
-                            imageDialog.show()
+                            progressDialog.show()
                             val selectedPhotoUri = data.data
                             firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
                             storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
@@ -426,13 +430,13 @@ class DoctorProfile : Fragment() {
                                         val profileImage : profileImage = profileImage(it.toString())
                                         firebaseDatabase.child("Doctor")
                                             .child(currentId.toString())
-                                            .child("profilePicture").setValue(profileImage).addOnSuccessListener {
+                                            .child("ProPic").setValue(profileImage).addOnSuccessListener {
                                                 _binding.ImageProfile.setImageURI(selectedPhotoUri)
                                                 Toast.makeText(context, "Profile picture Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                                imageDialog.dismiss()
+                                                progressDialog.dismiss()
                                             }.addOnFailureListener {
                                                 Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                                imageDialog.dismiss()
+                                                progressDialog.dismiss()
                                             }
                                     }
                                 }

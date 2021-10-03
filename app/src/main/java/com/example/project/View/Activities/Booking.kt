@@ -74,8 +74,8 @@ class Booking : AppCompatActivity() {
 
         firebaseDatabase.child("Doctor").child(myId).get().addOnSuccessListener {
             if(it.exists()){
-                name = it.child("firstname").value.toString()
-                image =it.child("profilePicture").value.toString()
+                name = it.child("firstname").toString()
+                image =it.child("profilePicture").toString()
             }
         }
 
