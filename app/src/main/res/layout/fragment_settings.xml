@@ -30,16 +30,15 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/changeProfile_picture"
-            android:background="@drawable/error"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
+            android:layout_marginStart="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_38sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:background="@drawable/ic_addsvg"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toEndOf="@id/Image_profile"
-            android:layout_marginTop="@dimen/_38sdp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="@dimen/_20sdp"
-            android:layout_marginStart="@dimen/_40sdp"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
     </RelativeLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
