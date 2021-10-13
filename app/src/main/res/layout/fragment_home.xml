@@ -29,21 +29,33 @@
         app:layout_constraintTop_toBottomOf="@+id/Viewpager"
         android:layout_marginBottom="@dimen/_10sdp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="@dimen/_15sdp"
             android:layout_marginBottom="@dimen/_10sdp">
+
             <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_margin="10dp"
                 android:layout_gravity="center"
                 android:rowCount="4"
                 android:columnCount="2">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -51,29 +63,13 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Doctors History"
-                        android:layout_gravity="center|bottom"
-                        android:layout_marginBottom="@dimen/_30sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
-                    <TextView
-                        android:layout_marginTop="@dimen/_15sdp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="(Medical Records)"
-                        android:layout_gravity="center|bottom"
-                        android:layout_marginBottom="@dimen/_15sdp"
-                        android:textColor="@color/black"/>
                     <LinearLayout
                         android:id="@+id/historylll1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:layout_gravity="center">
 
                         <ImageView
                             android:id="@+id/MyDoctors_Visited"
@@ -81,50 +77,88 @@
                             android:layout_height="@dimen/_50sdp"
                             android:text="Homeopathy"
                             android:textSize="15sp"
-                            android:layout_marginBottom="@dimen/_40sdp"
                             android:background="@drawable/previous"
                             />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-
-                <androidx.cardview.widget.CardView
-                    android:layout_height="150dp"
-                    android:layout_width="150dp"
-                    app:cardCornerRadius="15dp"
-                    app:cardElevation="10dp"
-
-                    android:layout_marginStart="20dp"
-                    android:layout_margin="10dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Homeopathy"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:text="My Doctors History"
+                        android:layout_gravity="center|bottom"
                         android:textSize="@dimen/_12sdp"
                         android:textColor="@color/black"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(Medical Records)"
+                        android:layout_gravity="center|bottom"
+                        android:layout_marginBottom="@dimen/_15sdp"
+                        android:textColor="@color/black"/>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_height="150dp"
+                    android:layout_width="150dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="10dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_margin="10dp">
+
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <ImageView
                             android:id="@+id/Homeopathy"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_gravity="center"
+                            android:layout_gravity="center|top"
                             android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Homeopathy"
                             android:background="@drawable/homeo"
-                            android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Homeopathy"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -132,18 +166,10 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cardiologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
                         android:orientation="vertical"
                         android:gravity="center">
 
@@ -153,47 +179,79 @@
                             android:layout_height="@dimen/_70sdp"
                             android:text="Cardiologist"
                             android:textSize="15sp"
+                            android:layout_gravity="center"
                             android:background="@drawable/cardiologist"
-                            android:layout_marginBottom="@dimen/_15sdp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cardiologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
                     app:cardElevation="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Audiologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
                             android:id="@+id/Audiologist"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Audiologist"
                             android:background="@drawable/audiologist"
-                            android:textSize="15sp"
-                            />
+                            android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Audiologist"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -201,34 +259,46 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dentist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
                             android:id="@+id/Dentist"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Dentist"
                             android:background="@drawable/dentist"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dentist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -236,20 +306,12 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ENT Specalist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:layout_gravity="center">
 
                         <ImageView
                             android:id="@+id/ENT_specialist"
@@ -257,13 +319,32 @@
                             android:layout_height="@dimen/_70sdp"
                             android:text="ENT specialist"
                             android:background="@drawable/ent"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ENT Specalist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -271,19 +352,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gynaecologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -292,13 +365,32 @@
                             android:layout_height="@dimen/_70sdp"
                             android:text="Gynaecologist"
                             android:background="@drawable/gynaecologist"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gynaecologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -306,19 +398,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Orthopaedic Surgeon"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -327,13 +411,32 @@
                             android:layout_height="@dimen/_70sdp"
                             android:text="Orthopaedic surgeon"
                             android:textSize="15sp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/orthopaedic"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Orthopaedic Surgeon"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -341,36 +444,47 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Paediatrician"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:gravity="center"
+                        android:layout_gravity="center"
                         >
 
                         <ImageView
                             android:id="@+id/Paediatrician"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/paediatrician"
                             android:layout_gravity="center"
                             android:text="Paediatrician"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Paediatrician"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -378,34 +492,45 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Psychiatrist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:layout_gravity="center">
 
                         <ImageView
                             android:id="@+id/Psychiatrists"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Psychiatrist"
                             android:background="@drawable/psychiatrist"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Psychiatrist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -413,19 +538,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Veterinarian"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -433,14 +550,33 @@
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
                             android:text="Veterinarian"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/veterinarian"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Veterinarian"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -448,34 +584,45 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Radiologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
                             android:id="@+id/Radiologist"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Radiologist"
                             android:background="@drawable/radiologist"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Radiologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -483,19 +630,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pulmonologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -503,14 +642,33 @@
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
                             android:text="Pulmonologist"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/pulmonologist"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pulmonologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -518,34 +676,45 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Endocrinologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
                             android:id="@+id/Endocrinologist"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:text="Endocrinologist"
                             android:background="@drawable/endocrinologist"
                             android:textSize="13sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Endocrinologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -553,19 +722,12 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Oncologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -574,13 +736,32 @@
                             android:layout_height="@dimen/_70sdp"
                             android:text="Oncologist"
                             android:background="@drawable/oncologist"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Oncologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -588,19 +769,11 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Neurologist"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
 
                         <ImageView
@@ -608,14 +781,33 @@
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
                             android:text="Neurologist"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/neurologist"
                             android:textSize="15sp"
                             />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Neurologist"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/_12sdp"
+                        android:textColor="@color/black"/>
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -623,35 +815,46 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cardiothoracic Surgeon"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_10sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cardiothoracic Surgeon"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:textSize="@dimen/_10sdp"
+                            android:textColor="@color/black"/>
 
                         <ImageView
                             android:id="@+id/Cardiothoracic_surgeon"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
                             android:text="Cardiothoracic surgeon"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:background="@drawable/cardiosurgeon"
                             android:textSize="13sp"
                             />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                 <androidx.cardview.widget.CardView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_height="150dp"
                     android:layout_width="150dp"
                     app:cardCornerRadius="15dp"
@@ -659,32 +862,33 @@
                     android:layout_marginStart="20dp"
                     android:layout_margin="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/black"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
+                        android:layout_gravity="center"
                         android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Other"
+                            android:layout_gravity="center"
+                            android:textSize="@dimen/_12sdp"
+                            android:textColor="@color/black"/>
+
                         <ImageView
                             android:id="@+id/Other"
                             android:layout_width="@dimen/_70sdp"
                             android:layout_height="@dimen/_70sdp"
                             android:text="Other"
                             android:background="@drawable/other"
-                            android:layout_marginBottom="@dimen/_10sdp"
                             android:textSize="13sp"
                             />
+
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
-
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 <androidx.cardview.widget.CardView
@@ -751,6 +955,6 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </GridLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
