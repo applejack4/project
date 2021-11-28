@@ -7,7 +7,9 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -37,6 +39,9 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.squareup.picasso.Picasso
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -50,6 +55,9 @@ class SettingFragment : Fragment() {
     private lateinit var notificationsViewModel: NotificationsViewModel
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var currentId : String
+    private lateinit var bitmap : Bitmap
+    private lateinit var dataArray : ByteArray
 
     companion object{
         const val GALLERY = 2
@@ -126,7 +134,7 @@ class SettingFragment : Fragment() {
                         if (user != null) {
                             _binding?.UserPermanentName?.text = user.firstname
                             _binding?.UserPermanentMobile?.text = user.mobile
-                            Picasso.get().load(user.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(
+                            Picasso.get().load(user.profilePicture)?.fit()?.centerInside()?.placeholder(
                                 R.drawable.ic_baseline_account_circle_24)?.into(_binding?.ImageProfile)
                         }
                     }
@@ -258,45 +266,41 @@ class SettingFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val progressDialog = ProgressDialog(context)
-        progressDialog.setMessage("Uploading Profile Picture...")
-        progressDialog.setCancelable(false)
         firebaseAuth = FirebaseAuth.getInstance()
-        val currentId : String = firebaseAuth.currentUser?.uid.toString()
+        currentId = firebaseAuth.currentUser?.uid.toString()
 
-        if(requestCode == DoctorProfile.GALLERY){
-            if(resultCode == Activity.RESULT_OK){
-                if(data != null){
-                    data.let {
-                        progressDialog.show()
-                        val selectedPhotoUri = data.data
-                        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
-                        val storageRef = storageReference!!.child(currentId.toString())
-                        if (selectedPhotoUri != null) {
-                            storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
-                                storageRef.downloadUrl.addOnSuccessListener {
-                                    val image : String = it.toString()
-                                    firebaseDatabase.child("Users")
-                                        .child(currentId.toString())
-                                        .child("profilePicture").setValue(image).addOnSuccessListener {
-                                            Toast.makeText(context, "Profile Picture Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
-                                        }.addOnFailureListener {
-                                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                            progressDialog.dismiss()
-                                        }
-                                }
+        when(requestCode){
+            requestCode ->{
+                if(requestCode == GALLERY){
+                    if(resultCode == Activity.RESULT_OK){
+                        if(data != null){
+                            data.data?.let {  uri ->
+                                println("Here we print the uri ->$uri")
+                                launchImageCrop(uri)
                             }
                         }else{
-                            return@let
+                            return
+                        }
+                    }else if(resultCode == Activity.RESULT_CANCELED){
+                        println("result cancelled.")
+                    }
+                }
+
+                if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+                    val resultUri = CropImage.getActivityResult(data)
+                    if(resultUri == null){
+                        return
+                    }else{
+                        if(Build.VERSION.SDK_INT < 29){
+                            println("This is the size if the image now ${resultUri.sampleSize}")
+                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                            byteArray()
+                        }else{
+                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                            byteArray()
                         }
                     }
-                }else{
-                    return
                 }
-            }else if(resultCode == Activity.RESULT_CANCELED){
-                println("result cancelled.")
             }
         }
     }
@@ -305,5 +309,43 @@ class SettingFragment : Fragment() {
 override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun launchImageCrop(uri : Uri){
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(100, 100)
+                .setMaxCropResultSize(3000, 3000)
+                .setCropShape(CropImageView.CropShape.OVAL)
+                .start(it, this)
+        }
+    }
+
+    private fun setImage(croppedImage : ByteArray){
+        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
+        val storageRef = storageReference!!.child(currentId.toString())
+        storageRef.putBytes(croppedImage).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener {
+                val image : String = it.toString()
+                firebaseDatabase.child("Users")
+                    .child(currentId.toString())
+                    .child("profilePicture").setValue(image).addOnSuccessListener {
+                        Toast.makeText(context, "Profile Picture Uploaded Successfully", Toast.LENGTH_LONG).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                    }
+            }
+        }
+    }
+
+    private fun byteArray(){
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+        dataArray = baos.toByteArray()
+        println("This is the baos result $dataArray This Would be the imageSize. ${dataArray.size.toByte()}")
+        Toast.makeText(context, "Working shiz...", Toast.LENGTH_LONG).show()
+        setImage(dataArray)
     }
 }

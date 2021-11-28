@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.AppointConstructor
 import com.medico.medko.View.Activities.PatientsDetails
 import com.medico.medko.View.Fragments.DoctorHome
@@ -37,8 +38,7 @@ class AppointmentAdapter(private val fragment : Fragment) :
         val appointConstructor : AppointConstructor = list[position]
         holder.name.text = appointConstructor.name
         holder.time.text = appointConstructor.Time
-//        Picasso.get().load(appointConstructor.profilePic).placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
-        Picasso.get().load(appointConstructor.profilePic).fit().centerInside().rotate(90F).into(holder.image)
+        fragment.context?.let { Glide.with(it).load(appointConstructor.profilePic).centerCrop().into(holder.image) }
 
 
         holder.call.setOnClickListener {
@@ -64,7 +64,7 @@ class AppointmentAdapter(private val fragment : Fragment) :
 
         holder.camera.setOnClickListener {
             if(fragment is DoctorHome){
-                fragment.camera(appointConstructor.id.toString(), holder.adapterPosition.toString())
+                fragment.camera(appointConstructor.id.toString())
             }
         }
     }

@@ -53,22 +53,30 @@ private var _binding: FragmentSearchBinding? = null
 
                 override fun onQueryTextChange(query : String?): Boolean {
                     itemList.clear()
-                    if (query != null) {
-                        for(obj : Doctor in docList){
-                            if(obj.DoctorName?.lowercase()?.contains(query.lowercase()) == true){
-                                itemList.add(obj)
-                            }else if(query.isEmpty()){
+
+                    when(query){
+                        query ->{
+                            if(query!!.isEmpty()){
                                 itemList.clear()
                             }
+
+                            for(obj : Doctor in docList){
+                                if(obj.DoctorName?.lowercase()?.contains(query.lowercase()) == true){
+                                    itemList.add(obj)
+                                }else if(query.isEmpty()){
+                                    itemList.clear()
+                                }
+                            }
+                            val searchAdapter = FirebaseSearchAdapter()
+                            searchAdapter.passingFragment(this@SearchFragment)
+                            searchAdapter.passingList(itemList)
+                            _binding?.RecView?.adapter  = searchAdapter
+                            _binding?.RecView?.adapter?.notifyDataSetChanged()
+                            _binding?.RecView?.setHasFixedSize(true)
+                            _binding?.RecView?.layoutManager = LinearLayoutManager(context)
+
                         }
                     }
-                    val searchAdapter = FirebaseSearchAdapter()
-                    searchAdapter.passingFragment(this@SearchFragment)
-                    searchAdapter.passingList(itemList)
-                    _binding?.RecView?.adapter  = searchAdapter
-                    _binding?.RecView?.adapter?.notifyDataSetChanged()
-                    _binding?.RecView?.setHasFixedSize(true)
-                    _binding?.RecView?.layoutManager = LinearLayoutManager(context)
                     return true
                 }
             })

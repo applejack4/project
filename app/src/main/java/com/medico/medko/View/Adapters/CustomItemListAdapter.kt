@@ -3,15 +3,14 @@ package com.medico.medko.View.Adapters
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.medico.medko.View.Activities.DoctorRegistration
 import com.medico.medko.databinding.DialogCustomItemBinding
 
 class CustomItemListAdapter(private val activity : Activity,
-                            private val fragment : Fragment?,
                             private val listItems : List<String>,
                             private val selectedItem : String): RecyclerView.Adapter<CustomItemListAdapter.MyViewHolder>() {
+
 
     class MyViewHolder(view: DialogCustomItemBinding): RecyclerView.ViewHolder(view.root){
         val tvText = view.tvTextItem

@@ -52,7 +52,6 @@ class MyHistory : Fragment() {
         val adapter = MyRecordAdapter()
         adapter.passingFragment(this)
         _binding.RecyclerViewMyHistory.adapter = adapter
-
         model.getData(id.toString()).observe(viewLifecycleOwner, {
                 history ->
             kotlin.run {

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.ImageModel
 import com.medico.medko.R
 import com.medico.medko.databinding.MyRecordsBinding
@@ -31,8 +32,7 @@ class MyRecordAdapter : RecyclerView.Adapter<MyRecordAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val imageModel : ImageModel = list[position]
         holder.date.text = imageModel.date
-        Picasso.get().load(imageModel.Image).placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
-        Picasso.get().load(imageModel.Image).fit().centerInside().rotate(90F).into(holder.image)
+        fragment.context?.let { Glide.with(it).asBitmap().load(imageModel.Image).centerCrop().into(holder.image) }
     }
 
     override fun getItemCount(): Int {

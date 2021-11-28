@@ -3,13 +3,16 @@ package com.medico.medko.View.Fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -22,9 +25,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.Doctor
-import com.medico.medko.Model.QrCode
 import com.medico.medko.View.Activities.ChangePassword
 import com.medico.medko.databinding.FragmentDoctorProfileBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -37,9 +39,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.medico.medko.Model.Token
 import com.medico.medko.View.Activities.MainActivity
-import com.medico.medko.viewModel.NotificationsViewModel
 import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.IOException
@@ -47,20 +47,19 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import com.google.firebase.database.DatabaseError
-
 import com.google.firebase.database.DataSnapshot
-
 import com.google.firebase.database.ValueEventListener
-
-
-
-
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
+import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
 
 class DoctorProfile : Fragment() {
 
     companion object{
         const val GALLERY = 2
         const val PROFILE = 3
+
     }
 
     private var currentPhotoPath : String ?= null
@@ -68,18 +67,14 @@ class DoctorProfile : Fragment() {
     private lateinit var auth : FirebaseAuth
     private lateinit var _binding : FragmentDoctorProfileBinding
     private lateinit var firebaseDatabase: DatabaseReference
+    private lateinit var fieldsRef : DatabaseReference
     private var storageReference : StorageReference ?= null
-    private var currentId : String ?= null
+    private lateinit var currentId : String
     private lateinit var f : File
+    private lateinit var profession : String
     val fragment : DoctorProfile = this
-
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
+    private lateinit var bitmap : Bitmap
+    private lateinit var dataArray : ByteArray
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,52 +88,6 @@ class DoctorProfile : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("pref_str", "0")
-        editor.apply()
-
-        _binding.GalleryQrCode.setOnClickListener {
-            Dexter.withContext(context).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE).withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    if(report!!.areAllPermissionsGranted()){
-                        val galIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        if(context?.let { galIntent.resolveActivity(it.packageManager) } != null){
-                            // Create the File where the photo should go
-                            var photoFile: File? = null
-                            try {
-                                photoFile = createImageFile()
-                            } catch (ex: IOException) {
-                                // Error occurred while creating the File
-                                Log.i("Error","Exception occurred is ${ex.message}")
-                            }
-                            if(photoFile != null){
-                                val photoURI = FileProvider.getUriForFile(context!!, "com.medico.medko.android.fileProvide", photoFile)
-                                galIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                                activityResult(galIntent, GALLERY)
-                            }else{
-                                return
-                            }
-                        }else{
-                            return
-                        }
-                    }else{
-                        showRationalDialogForPermission()
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permission : MutableList<PermissionRequest>?,
-                    token : PermissionToken?
-                ) {
-                    showRationalDialogForPermission()
-                }
-            }).onSameThread().check()
-        }
-
-
-
         _binding.changeProfilePicture.setOnClickListener {
             Dexter.withContext(context)
                 .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -182,18 +131,23 @@ class DoctorProfile : Fragment() {
 
         auth = FirebaseAuth.getInstance()
         currentId = auth.currentUser?.uid.toString()
+        println("Current is is ${currentId}")
         firebaseDatabase =  FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
         firebaseDatabase.child("Doctor").child(userid).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (obj in snapshot.children){
                     val details = snapshot.getValue(Doctor::class.java)
                     if(details != null){
                         _binding.DoctorPermanentName.text = details.DoctorName
                         _binding.DoctorPermanentClinicName.text = details.ClinicName
                         _binding.DoctorPermanentStatus.text = details.hospitalStatus
                         _binding.DoctorPermanentMobile.text = details.mobile
-                        Picasso.get().load(details.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.into(_binding.ImageProfile)
-                    }
+                        _binding.DoctorPermanentAdvanceFee.text = details.bookingAmount
+                        _binding.DoctorPermanentGpayId.text = details.gPay
+                        _binding.DoctorPermanentPhonePayId.text = details.pPay
+                        _binding.DoctorPermanentPaytmId.text = details.Paytm
+                        context?.let { Glide.with(it).asBitmap().load(details.profilePicture).centerCrop().into(_binding.ImageProfile) }
+
+                        profession = details.Speciality.toString()
                 }
             }
 
@@ -206,6 +160,10 @@ class DoctorProfile : Fragment() {
             val name : String = _binding.DoctorPermanentName.text.toString()
             val mobile : String = _binding.DoctorPermanentMobile.text.toString()
             val clinic : String = _binding.DoctorPermanentClinicName.text.toString()
+            val gPay : String = _binding.DoctorPermanentGpayId.text.toString()
+            val pPay : String = _binding.DoctorPermanentPhonePayId.text.toString()
+            val payTm : String = _binding.DoctorPermanentPaytmId.text.toString()
+            val advFee : String = _binding.DoctorPermanentAdvanceFee.text.toString()
 
             //button settings
             _binding.ButtonSaveChanges.visibility = View.VISIBLE
@@ -224,27 +182,54 @@ class DoctorProfile : Fragment() {
             _binding.DoctorPermanentClinicName.visibility = View.GONE
             _binding.ChangeDoctorClinic.visibility = View.VISIBLE
 
+            //GPay
+            _binding.DoctorPermanentGpayId.visibility = View.GONE
+            _binding.ChangeDoctorGpayid.visibility = View.VISIBLE
+
+            //PhonePay
+            _binding.DoctorPermanentPhonePayId.visibility = View.GONE
+            _binding.ChangeDoctorPhonePayId.visibility = View.VISIBLE
+
+            //Paytm
+            _binding.DoctorPermanentPaytmId.visibility = View.GONE
+            _binding.ChangeDoctorPaytmId.visibility = View.VISIBLE
+
+            //AdvFee
+            _binding.DoctorPermanentAdvanceFee.visibility = View.GONE
+            _binding.ChangeDoctorAdvanceFee.visibility = View.VISIBLE
 
 
             _binding.ChangeDoctorClinic.setText(clinic)
             _binding.ChangeDoctorMobile.setText(mobile)
             _binding.ChangeDoctorName.setText(name)
+            _binding.ChangeDoctorPhonePayId.setText(pPay)
+            _binding.ChangeDoctorPaytmId.setText(payTm)
+            _binding.ChangeDoctorGpayid.setText(gPay)
+            _binding.ChangeDoctorAdvanceFee.setText(advFee)
         }
 
         _binding.ButtonSaveChanges.setOnClickListener {
-
-            val name : String = _binding.ChangeDoctorName.text.toString()
-            val mobile : String = _binding.ChangeDoctorMobile.toString()
-            val clinic : String = _binding.ChangeDoctorClinic.toString()
             when{
-                TextUtils.isEmpty(_binding.ChangeDoctorName.text) ->{
+                TextUtils.isEmpty(_binding.ChangeDoctorName.text.trim()) ->{
                     Toast.makeText(context, "Name Cannot be empty", Toast.LENGTH_LONG).show()
                 }
-                TextUtils.isEmpty(_binding.ChangeDoctorMobile.text) ->{
+                TextUtils.isEmpty(_binding.ChangeDoctorMobile.text.trim()) ->{
                     Toast.makeText(context, "Mobile Cannot be empty", Toast.LENGTH_LONG).show()
                 }
-                TextUtils.isEmpty(_binding.ChangeDoctorClinic.text) ->{
+                TextUtils.isEmpty(_binding.ChangeDoctorClinic.text.trim()) ->{
                     Toast.makeText(context, "Clinic Cannot be empty", Toast.LENGTH_LONG).show()
+                }
+                TextUtils.isEmpty(_binding.ChangeDoctorGpayid.text.trim()) ->{
+                    Toast.makeText(context, "Gpayid cannot be empty", Toast.LENGTH_LONG).show()
+                }
+                TextUtils.isEmpty(_binding.ChangeDoctorPhonePayId.text.trim()) ->{
+                    Toast.makeText(context, "Phonepay id cannot be empty", Toast.LENGTH_LONG).show()
+                }
+                TextUtils.isEmpty(_binding.ChangeDoctorPaytmId.text.trim()) ->{
+                    Toast.makeText(context, "Paytm id cannot be empty", Toast.LENGTH_LONG).show()
+                }
+                TextUtils.isEmpty(_binding.ChangeDoctorAdvanceFee.text.trim()) ->{
+                    Toast.makeText(context, "Advance Fee cannot be Empty", Toast.LENGTH_LONG).show()
                 }
 
                 else ->{
@@ -254,17 +239,24 @@ class DoctorProfile : Fragment() {
                     val nameUpdate : String = _binding.ChangeDoctorName.text.toString()
                     val mobileUpdate : String = _binding.ChangeDoctorMobile.text.toString()
                     val clinicUpdate : String = _binding.ChangeDoctorClinic.text.toString()
+                    val gPay : String = _binding.ChangeDoctorGpayid.text.toString()
+                    val pPay : String = _binding.ChangeDoctorPhonePayId.text.toString()
+                    val payTM : String = _binding.ChangeDoctorPaytmId.text.toString()
+                    val advFee : String = _binding.ChangeDoctorAdvanceFee.text.toString()
 
                     firebaseDatabase.child("Doctor").child(userid).child("doctorName").setValue(nameUpdate)
                     firebaseDatabase.child("Doctor").child(userid).child("mobile").setValue(mobileUpdate)
                     firebaseDatabase.child("Doctor").child(userid).child("clinicName").setValue(clinicUpdate)
+                    firebaseDatabase.child("Doctor").child(userid).child("gPay").setValue(gPay)
+                    firebaseDatabase.child("Doctor").child(userid).child("pPay").setValue(pPay)
+                    firebaseDatabase.child("Doctor").child(userid).child("paytm").setValue(payTM)
+                    firebaseDatabase.child("Doctor").child(userid).child("bookingAmount").setValue(advFee)
                     editTextMethod()
                     onResume()
                 }
             }
             }
         }
-
 
         _binding.ChangeStatusButton.setOnClickListener {
             val currentStatus : String = _binding.DoctorPermanentStatus.text.toString()
@@ -275,7 +267,6 @@ class DoctorProfile : Fragment() {
             _binding.DoctorChangeStatus.visibility = View.VISIBLE
 
             _binding.DoctorChangeStatus.setText(currentStatus)
-
         }
 
         _binding.ButtonSaveStatus.setOnClickListener {
@@ -354,19 +345,7 @@ class DoctorProfile : Fragment() {
                     for (ds in dataSnapshot.children) {
                         val friend : String = ds.child("token").value.toString()
                         friends.add(friend)
-                        friends.add("2")
-                        friends.add("3")
-                        friends.add("4")
-                        friends.add("5")
                     }
-
-                    for (i in friends){
-                        println("---->$i \n")
-                    }
-
-                    val indo : Int = friends.indexOf(token1)
-                    println("Indo is $indo")
-                    println("token is $token1")
 
                     val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
                         .getReference("AppUsers").child("Doctor").child(currentId.toString()).child("Token")
@@ -384,6 +363,9 @@ class DoctorProfile : Fragment() {
 
         }
 
+
+
+
     }
 
     private fun editTextMethod(){
@@ -399,117 +381,32 @@ class DoctorProfile : Fragment() {
         _binding.DoctorPermanentClinicName.visibility = View.VISIBLE
         _binding.ChangeDoctorClinic.visibility = View.GONE
 
+        //gPay settings
+        _binding.DoctorPermanentGpayId.visibility = View.VISIBLE
+        _binding.ChangeDoctorGpayid.visibility = View.GONE
+
+        //phonePay
+        _binding.DoctorPermanentPhonePayId.visibility = View.VISIBLE
+        _binding.ChangeDoctorPhonePayId.visibility = View.GONE
+
+        //payTm
+        _binding.DoctorPermanentPaytmId.visibility =View.VISIBLE
+        _binding.ChangeDoctorPaytmId.visibility = View.GONE
+
+        //advFee
+        _binding.DoctorPermanentAdvanceFee.visibility = View.VISIBLE
+        _binding.ChangeDoctorAdvanceFee.visibility = View.GONE
 
 
         //button
-
         _binding.ButtonSaveChanges.visibility  = View.GONE
         _binding.ButtonEditProfile.visibility = View.VISIBLE
 
         onResume()
     }
 
-    private fun showRationalForPermissionMobile(){
-        AlertDialog.Builder(context).setMessage("It seems that you have declined the permissions to access the feature," +
-                "                \"Please turn on the permission to use this feature").setPositiveButton("GO TO SETTINGS"){
-                _,_ ->
-            try {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri = Uri.fromParts("package", activity?.packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            }catch (e : ActivityNotFoundException){
-                e.printStackTrace()
-            }
-        }.setNegativeButton("Cancel"){
-                dialog, _ ->
-            dialog.dismiss()
-        }.show()
-    }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val progressDialog = ProgressDialog(context)
-        val imageDialog = ProgressDialog(context)
-
-        progressDialog.setMessage("Uploading QrCode...")
-        imageDialog.setMessage("Uploading Profile Picture...")
-
-        imageDialog.setCancelable(false)
-        progressDialog.setCancelable(false)
-
-        when(requestCode){
-            requestCode ->{
-                if(requestCode == GALLERY){
-                    if(resultCode == Activity.RESULT_OK){
-                        if(data != null){
-                            data.let {
-                                progressDialog.show()
-                                val selectedPhotoUri = data.data
-                                firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                                storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("QrCodes")
-                                val storageRef = storageReference!!.child(currentId.toString())
-                                if (selectedPhotoUri != null) {
-                                    storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
-                                        storageRef.downloadUrl.addOnSuccessListener {
-                                            val qrcode : QrCode = QrCode(it.toString())
-                                            firebaseDatabase.child("Doctor")
-                                                .child(currentId.toString())
-                                                .child("Qrcode").setValue(qrcode).addOnSuccessListener {
-                                                    Toast.makeText(context, "QR-Code Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                                    progressDialog.dismiss()
-                                                }.addOnFailureListener {
-                                                    Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                                    progressDialog.dismiss()
-                                                }
-                                        }
-                                    }
-                                }else{
-                                    return@let
-                                }
-                            }
-                        }else{
-                            return
-                        }
-                    }else if(resultCode == Activity.RESULT_CANCELED){
-                        println("result cancelled.")
-                    }
-                }
-                if(requestCode == PROFILE){
-                    if(resultCode == Activity.RESULT_OK){
-                        data?.let {
-                            imageDialog.show()
-                            val selectedPhotoUri = data.data
-                            firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                            storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
-                            val storageRef = storageReference!!.child(currentId.toString())
-                            if (selectedPhotoUri != null) {
-                                storageRef.putFile(selectedPhotoUri).addOnSuccessListener {
-                                    storageRef.downloadUrl.addOnSuccessListener {
-                                        val profileImage : String = it.toString()
-                                        firebaseDatabase.child("Doctor")
-                                            .child(currentId.toString()).child("profilePicture").setValue(profileImage).addOnSuccessListener {
-                                                _binding.ImageProfile.setImageURI(selectedPhotoUri)
-                                                Toast.makeText(context, "Profile picture Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                                imageDialog.dismiss()
-                                            }.addOnFailureListener {
-                                                Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                                                imageDialog.dismiss()
-                                            }
-                                    }
-                                }
-                            }else{
-                                return println("The data isn't getting stored...")
-                            }
-                        }
-                    }else if(resultCode == Activity.RESULT_CANCELED){
-                        println("result cancelled.")
-                    }
-                }
-            }
-        }
-    }
 
     @SuppressLint("SimpleDateFormat")
     private fun createImageFile(): File {
@@ -557,4 +454,89 @@ class DoctorProfile : Fragment() {
         startActivityForResult(intent, requestcode)
     }
 
+    private fun launchImageCrop(uri : Uri){
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(100, 100)
+                .setMaxCropResultSize(3000, 3000)
+                .setCropShape(CropImageView.CropShape.OVAL)
+                .start(it, this)
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val progressDialog = ProgressDialog(context)
+        val imageDialog = ProgressDialog(context)
+
+        progressDialog.setMessage("Uploading QrCode...")
+        imageDialog.setMessage("Uploading Profile Picture...")
+
+        imageDialog.setCancelable(false)
+        progressDialog.setCancelable(false)
+
+        when(requestCode){
+            requestCode ->{
+                if(requestCode == PROFILE){
+                    if(resultCode == Activity.RESULT_OK){
+                        data?.data?.let { uri ->
+                            println("Here we print the uri ->$uri")
+                            launchImageCrop(uri)
+                        }
+                    }else if(resultCode == Activity.RESULT_CANCELED){
+                        println("result cancelled.")
+                    }
+                }
+
+                if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+                    val resultUri = CropImage.getActivityResult(data)
+                    if(resultUri == null){
+                        return
+                    }else{
+                        if(Build.VERSION.SDK_INT < 29){
+                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                            byteArray()
+                        }else{
+                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                            byteArray()
+                        }
+                    }
+                }
+                if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun setImage(croppedImage : ByteArray){
+
+        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
+        val storageRef = storageReference!!.child(currentId.toString())
+        storageRef.putBytes(croppedImage).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener {
+                val profileImage : String = it.toString()
+                firebaseDatabase.child("Doctor")
+                    .child(currentId.toString()).child("profilePicture").setValue(profileImage).addOnSuccessListener {
+                        fieldsRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("Fields").child(profession).child(currentId)
+                        fieldsRef.child("profilePicture").setValue(profileImage)
+                        Toast.makeText(context, "Profile picture Uploaded Successfully", Toast.LENGTH_LONG).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                    }
+            }
+        }
+    }
+
+    private fun byteArray(){
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+        dataArray = baos.toByteArray()
+        println("This is the baos result $dataArray This Would be the imageSize. ${dataArray.size.toByte()}")
+        Toast.makeText(context, "Working shiz...", Toast.LENGTH_LONG).show()
+        setImage(dataArray)
+    }
 }

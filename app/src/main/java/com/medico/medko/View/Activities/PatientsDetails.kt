@@ -48,7 +48,7 @@ class PatientsDetails : AppCompatActivity() {
         val id : String = intent.getStringExtra("id").toString()
 
         _binding.PatientsNameDetail.text = patientName
-        Picasso.get().load(profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(_binding.PatientsImageDetail)
+        Picasso.get().load(profilePicture)?.fit()?.centerInside()?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(_binding.PatientsImageDetail)
     }
 
     private fun changeFragment(fragment : Fragment){

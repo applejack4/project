@@ -31,7 +31,7 @@ class ReviewAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Revie
         val review : ReviewMode = list[position]
         holder.name.text = review.name
         holder.message.text = review.review
-        Picasso.get().load(review.profilePic)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(holder.image)
+        Picasso.get().load(review.profilePic)?.fit()?.centerInside()?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(holder.image)
 
         holder.itemView.setOnClickListener {
             if(fragment is DoctorReview){

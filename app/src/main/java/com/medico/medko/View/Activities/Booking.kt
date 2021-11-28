@@ -25,7 +25,6 @@ import com.medico.medko.Model.ReviewMode
 import com.medico.medko.R
 import com.medico.medko.View.Fragments.Qrcode
 import com.medico.medko.View.Fragments.Review_fragment
-import com.medico.medko.databinding.ActivityBookingBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -36,6 +35,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import android.view.ViewGroup
 import com.medico.medko.Model.Token
+import com.medico.medko.databinding.ActivityBookingBinding
 
 
 class Booking : AppCompatActivity() {
@@ -52,7 +52,7 @@ class Booking : AppCompatActivity() {
     private lateinit var pendingdialog : Dialog
     private lateinit var cancelledDialog : Dialog
     private lateinit var _binding : ActivityBookingBinding
-    private var hisId : String ?= null
+    private lateinit var hisId : String
 
     private var name : String ?= null
     private var image : String ?= null
@@ -109,7 +109,7 @@ class Booking : AppCompatActivity() {
         _binding.BookingClinicName.text = clinicName
         _binding.BookingSpeciality.text = speciality
         _binding.DoctorStatus.text = status
-        Picasso.get().load(profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)
+        Picasso.get().load(profilePicture)?.fit()?.centerInside()?.placeholder(R.drawable.ic_baseline_account_circle_24)
             ?.into(_binding.BookingProfileImage)
 
         appointList = ArrayList<AppointConstructor>()
@@ -146,8 +146,6 @@ class Booking : AppCompatActivity() {
         val currentTime = tf.format(Date())
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
         val doctorUserid = intent.getStringExtra("id_firebase").toString()
-
-        getToken()
 
         _binding.BookAppointment.setOnClickListener {
             firebaseDatabase.child("Doctor").child(doctorUserid).get().addOnSuccessListener {
@@ -259,7 +257,7 @@ class Booking : AppCompatActivity() {
 
         _binding.Review.setOnClickListener {
             with(builder){
-                setPositiveButton("Submit"){ dialog, which ->
+                setPositiveButton("Submit"){ dialog, _ ->
                     val result : String = editText.text.toString()
                     val reference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
                     when{
@@ -278,11 +276,8 @@ class Booking : AppCompatActivity() {
                                             .child("Review").child(id).setValue(reviewMode)
                                             .addOnSuccessListener {
                                                 dialog.dismiss()
-                                                Toast.makeText(
-                                                    context,
-                                                    "Your review has been Updated successfully.",
-                                                    Toast.LENGTH_LONG
-                                                ).show()
+                                                Toast.makeText(context, "Your review has been Updated successfully.", Toast.LENGTH_LONG).show()
+                                                getTokenToSendReview()
                                             }
                                     }
                                 }
@@ -291,7 +286,7 @@ class Booking : AppCompatActivity() {
                     }
                 }
 
-                setNegativeButton("Cancel"){ dialog, which ->
+                setNegativeButton("Cancel"){ dialog, _ ->
                     dialog.dismiss()
                 }
                 if (dialogLayout.parent != null) {
@@ -373,9 +368,77 @@ class Booking : AppCompatActivity() {
                         data.put("title", name)
                         data.put("message", "Booked an appointment")
 
+                    to.put("data", data)
                     for (tokens in friends){
                         to.put("to", tokens)
-                        to.put("data", data)
+                        println(tokens)
+                        sendNotification(to)
+                    }
+                }else{
+                    return
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Booking, error.message, Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun getTokenToSendReview(){
+        val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").
+        getReference("AppUsers").child("Doctor")
+            .child(hisId!!).child("Token")
+
+        val list : ArrayList<Token> = arrayListOf()
+        val friends: MutableList<String?> = ArrayList()
+        val ref = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").
+        child("Doctor").child(hisId.toString()).child("Token")
+
+        val eventListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                friends.clear()
+                if(dataSnapshot.exists()){
+                    for (ds in dataSnapshot.children) {
+                        val friend : String = ds.child("token").value.toString()
+                        friends.add(friend)
+                    }
+                }else{
+                    println("This has no snapshot so it gets null.")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(this@Booking, databaseError.message, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        ref.addListenerForSingleValueEvent(eventListener)
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    list.clear()
+                    for (obj in snapshot.children){
+                        val token : Token? = obj.getValue(Token::class.java)
+                        if(token != null){
+                            list.add(token)
+                        }else{
+                            return
+                        }
+                    }
+
+                    val to = JSONObject()
+                    val data = JSONObject()
+
+                    data.put("hisId", myId)
+                    data.put("title", name)
+                    data.put("message", "Added a Review")
+
+                    to.put("data", data)
+                    for (tokens in friends){
+                        to.put("to", tokens)
+                        println(tokens)
                         sendNotification(to)
                     }
                 }else{

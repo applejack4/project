@@ -69,4 +69,23 @@
     <string name="Newpass">Enter New Password</string>
     <string name="away">The doctor is away/not in clinic</string>
     <string name="notified">We\'ve notified the doctor you made an appointment.</string>
+    <string name="UPI_Payment">UPI Payment</string>
+    <string name="Payment_Amount">Payment Amount</string>
+    <string name="Payment_id">UPI Id</string>
+    <string name="pname">Payee Name</string>
+    <string name="patientNote">Patient Note</string>
+    <string name="Pay">Pay</string>
+    <string name="Note">NOTE</string>
+    <string name="Inst">Please talk to doctor (or) Receptionist and make sure the slots are available before you make a payment.</string>
+    <string name="gpayExample">googlepay@example</string>
+    <string name="ppayexample">PhonePay@example</string>
+    <string name="paytmexample">Paytm@example</string>
+    <string name="Logout">Log Out</string>
+    <string name="changepass">Change Password</string>
+    <string name="savechanges">Save Changes</string>
+    <string name="editprofile">Edit Profile</string>
+    <string name="savestatus">Save Status</string>
+    <string name="changetodaysstatus">Change Today Status</string>
+    <string name="hundo">100</string>
+    <string name="rkey_id">rzp_test_voQ3ZCDlKz1PHi</string>
 </resources>

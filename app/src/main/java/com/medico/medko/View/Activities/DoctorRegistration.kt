@@ -95,9 +95,9 @@ class DoctorRegistration : AppCompatActivity() {
                                 if (task.isSuccessful) {
                                     progress.show()
                                     val id = auth.currentUser!!.uid
-                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password,"null",  "0", "Available")
+                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password,"null",  "0", "Available", "GooglePay@ybl", "PhonePay@okaxis", "Paytm@okok", "100")
                                     val all_Users = AllUsers(id, "1")
-                                    fields.child(speciality.toString()).child(id).setValue(doctor)
+                                    fields.child(speciality).child(id).setValue(doctor)
                                     appUsers.child(id).setValue(doctor).addOnCompleteListener {
                                         if (it.isSuccessful) {
                                             allUsers.child(id).setValue(all_Users).addOnCompleteListener {
@@ -131,6 +131,7 @@ class DoctorRegistration : AppCompatActivity() {
         }
     }
 
+
     private fun functionIntent() {
         val loginIntent = Intent(this@DoctorRegistration, MainActivity::class.java)
         startActivity(loginIntent)
@@ -144,7 +145,7 @@ class DoctorRegistration : AppCompatActivity() {
         binding.tvDialogList.text = title
 
         binding.rvListDialog.layoutManager = LinearLayoutManager(this)
-        val adapter = CustomItemListAdapter(this, null ,itemList, selection)
+        val adapter = CustomItemListAdapter(this, itemList, selection)
         binding.rvListDialog.adapter = adapter
         customListDialog.show()
     }

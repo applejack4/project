@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.DetailImageModel
 import com.medico.medko.R
 import com.medico.medko.databinding.EntireRecordBinding
@@ -31,8 +32,8 @@ class EntireRecordAdapter(private var fragment : Fragment) : RecyclerView.Adapte
         holder.date.text = detailImageModel.date
         holder.name.text = detailImageModel.name
         holder.clinicName.text = detailImageModel.clinic
-        Picasso.get().load(detailImageModel.Image).placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
-        Picasso.get().load(detailImageModel.Image).fit().centerInside().rotate(90F).into(holder.image)
+        fragment.context?.let { Glide.with(it).asBitmap().load(detailImageModel.Image).centerCrop().into(holder.image) }
+
     }
 
     override fun getItemCount(): Int {

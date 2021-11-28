@@ -4,13 +4,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.medico.medko.Model.AppointConstructor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class AppointmentViewModel : ViewModel() {
     private val auth : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
-
     private var firebaseDatabase : DatabaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
 
     var list : ArrayList<AppointConstructor> = arrayListOf()
@@ -119,5 +121,14 @@ class AppointmentViewModel : ViewModel() {
 //    fun getOfflineApps() : LiveData<String>{
 //        return noAppointmentsOffline
 //    }
+
+    fun triggerFlow() : Flow<String> {
+        return flow {
+            repeat(5){
+                emit("Item $it")
+                kotlinx.coroutines.delay(1000L)
+            }
+        }
+    }
 
 }

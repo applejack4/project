@@ -26,7 +26,6 @@ import com.google.firebase.messaging.RemoteMessage
 import com.medico.medko.Model.Token
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -48,13 +47,82 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val message = map["message"]
             val hisId = map["hisId"]
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
-                createOreoNotification(title!!, message!!, hisId!!)
-            } else
-            {
-                createNormalNotification(title!!, message!!, hisId!!)
+            when(message.toString()){
+                AppConstants.BOOKED_APPOINTMENT ->{
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                        createOreoNotification(title.toString(), message!!, hisId!!)
+                    } else {
+                        createNormalNotification(title!!, message!!, hisId!!)
+                    }
+                }
+                AppConstants.REVIEW ->{
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                        println("Current version is greater than Android Oreo${Build.VERSION.SDK_INT.toString()}")
+                        createReviewOreoNotification(title.toString(), message!!, hisId!!)
+                    } else {
+                        println("Current version is Lower than Android Oreo${Build.VERSION.SDK_INT.toString()}")
+                        createReviewNormalNotification(title.toString(), message!!, hisId!!)
+                    }
+                }
             }
         }
+    }
+
+    private fun createReviewNormalNotification(title : String, message: String, hisId: String) {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val builder = NotificationCompat.Builder(this, AppConstants.CHANNEL_ID)
+        builder.setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSmallIcon(R.drawable.check)
+            .setAutoCancel(true)
+            .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+            .setSound(uri)
+
+        val intent = Intent(this, DoctorMainPage::class.java)
+
+        intent.putExtra("hisId", hisId)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        builder.setContentIntent(pendingIntent)
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(Random().nextInt(85 - 65), builder.build())
+    }
+
+    private fun createReviewOreoNotification(title : String, message: String, hisId: String) {
+        val channel = NotificationChannel(
+            AppConstants.CHANNEL_ID,
+            "Message",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+
+        channel.setShowBadge(true)
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
+
+        val intent = Intent(this, DoctorMainPage::class.java)
+
+        intent.putExtra("hisId", hisId)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+        val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setSmallIcon(R.drawable.check)
+            .setAutoCancel(true)
+            .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+            .setContentIntent(pendingIntent)
+            .build()
+
+        manager.notify(100, notification)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -105,7 +173,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         builder.setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.check)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setSound(uri)
@@ -154,7 +222,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.check)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setContentIntent(pendingIntent)

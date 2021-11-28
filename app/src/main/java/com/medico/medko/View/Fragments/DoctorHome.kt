@@ -6,7 +6,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.*
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -21,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.*
 import com.medico.medko.View.Adapters.AppointmentAdapter
 import com.medico.medko.databinding.FragmentDoctorHomeBinding
@@ -38,17 +41,18 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
-import com.medico.medko.viewModel.NotificationsViewModel
 import com.squareup.picasso.Picasso
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import android.content.Context.MODE_PRIVATE
-
-
-
 
 class DoctorHome : Fragment() {
     private lateinit var firebaseDatabase : DatabaseReference
@@ -61,11 +65,17 @@ class DoctorHome : Fragment() {
     private var imageUri : Uri ?= null
     private lateinit var currentPhotoPath : String
     private lateinit var listUserId : String
+    private lateinit var f : File
     var isRemembered = true
     private var rStr: String ?= null
+    private lateinit var token1 : String
+    private lateinit var bitmap : Bitmap
+    private lateinit var dataArray : ByteArray
+    private lateinit var auth : String
+    private lateinit var progressDialog : ProgressDialog
 
     companion object {
-        const val CAMERA = 1
+        private const val CAMERA = 42
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,10 +83,18 @@ class DoctorHome : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         var firebaseToken : String ?= null
         var key : String ?= null
-        var token1 : String ?= null
         val currentUser : String = firebaseAuth.currentUser?.uid.toString()
         val sdt = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
         val currentDate = sdt.format(Date())
+
+        progressDialog = ProgressDialog(context)
+        progressDialog.setMessage("Uploading image...")
+        progressDialog.setCancelable(false)
+
+        val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+            .getReference("AppUsers").child("Doctor").child(currentUser)
+
+        val friends: MutableList<String?> = ArrayList()
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if(it.isComplete){
@@ -85,12 +103,6 @@ class DoctorHome : Fragment() {
         }.addOnFailureListener {
             Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
         }
-
-        val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
-            .getReference("AppUsers").child("Doctor").child(currentUser)
-
-
-        val friends: MutableList<String?> = ArrayList()
 
         myRef.child("Token").orderByChild("token").addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -133,7 +145,6 @@ class DoctorHome : Fragment() {
             }
 
         })
-
     }
 
     override fun onCreateView(
@@ -147,7 +158,6 @@ class DoctorHome : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        println("This is on view created")
         val userId = firebaseAuth.currentUser?.uid.toString()
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         firebaseAuth = FirebaseAuth.getInstance()
@@ -161,7 +171,7 @@ class DoctorHome : Fragment() {
                     _binding?.tvDoctorHomeName?.text = doctor.DoctorName
                     _binding?.tvDoctorClinicName?.text = doctor.ClinicName
                     if(_binding?.ivDoctorHomeImage != null){
-                        Picasso.get()?.load(doctor.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.into(_binding?.ivDoctorHomeImage)
+                        context?.let { Glide.with(it).asBitmap().load(doctor.profilePicture).centerCrop().into(_binding!!.ivDoctorHomeImage) }
                     }else{
                         return
                     }
@@ -198,7 +208,6 @@ class DoctorHome : Fragment() {
         _binding!!.recyclerView.adapter = appointmentAdapter
         _binding!!.recyclerView.layoutManager = LinearLayoutManager(activity)
 
-
         val reference = firebaseDatabase.child("Doctor").child(userId)
         val adapter = AppointmentAdapter(this)
     }
@@ -210,13 +219,16 @@ class DoctorHome : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
-        println("This is onResume")
         val model : AppointmentViewModel by viewModels()
         val userId = firebaseAuth.currentUser?.uid.toString()
         val reference = firebaseDatabase.child("Doctor").child(userId)
         _binding!!.recyclerView.layoutManager = LinearLayoutManager(activity)
         val sdf = SimpleDateFormat("dd:MM:yyyy")
         val tf = SimpleDateFormat("hh:mm:ss")
+
+        val job = Job()
+        val uiScope = CoroutineScope(Dispatchers.Main + job)
+
 
 
         reference.get().addOnSuccessListener { it ->
@@ -231,7 +243,7 @@ class DoctorHome : Fragment() {
                                     model.getUsers().observe(viewLifecycleOwner, {
                                             appointments ->
                                         kotlin.run {
-                                        appointments.let { it ->
+                                        appointments.let {
                                             _binding!!.recyclerView.adapter = adapter
                                             when(it){
                                                 it ->{
@@ -325,7 +337,6 @@ class DoctorHome : Fragment() {
             "December"
         )
         val month = monthName[c[Calendar.MONTH]]
-        println("Month name:$month")
         val year = c[Calendar.YEAR]
         val date = c[Calendar.DATE]
 
@@ -442,7 +453,7 @@ class DoctorHome : Fragment() {
         startActivity(intent)
     }
 
-    fun camera(id : String, position: String){
+    fun camera(id : String){
         listUserId = id
         Dexter.withContext(context).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -464,10 +475,13 @@ class DoctorHome : Fragment() {
                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                             startActivityForResult(cameraIntent, CAMERA)
                         }else{
+                            progressDialog.dismiss()
                             return
                         }
+                    }else{
+                        progressDialog.dismiss()
+                        return
                     }
-
                 }else{
                     showRationalDialogForPermission()
                 }
@@ -482,69 +496,58 @@ class DoctorHome : Fragment() {
         }).onSameThread().check()
     }
 
-    @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if(resultCode == Activity.RESULT_OK){
-            if(requestCode == CAMERA){
-                val auth : String = FirebaseAuth.getInstance().currentUser?.uid.toString()
-                val f: File = File(currentPhotoPath)
-                val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                val contentUri = Uri.fromFile(f)
-                mediaScanIntent.data = contentUri
-                context!!.sendBroadcast(mediaScanIntent)
-                val progressDialog = ProgressDialog(context)
-                progressDialog.setMessage("Uploading image...")
-                progressDialog.setCancelable(false)
-                progressDialog.show()
-                val sdf = SimpleDateFormat("dd-MM-YYYY")
-                val tf = SimpleDateFormat("hh:mm:ss")
-                val currentDate = sdf.format(Date()).toString()
-                val currentTime = tf.format(Date()).toString()
+            when(requestCode) {
+                requestCode ->{
+                    if(requestCode == CAMERA){
+                        auth = FirebaseAuth.getInstance().currentUser?.uid.toString()
+                        f = File(currentPhotoPath)
+                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                        val contentUri = Uri.fromFile(f)
+                        mediaScanIntent.data = contentUri
+                        context!!.sendBroadcast(mediaScanIntent)
+                        val sdf = SimpleDateFormat("dd-MM-YYYY")
+                        val tf = SimpleDateFormat("hh:mm:ss")
+                        val currentDate = sdf.format(Date()).toString()
+                        val currentTime = tf.format(Date()).toString()
 
-                val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
-                val CD= sdfd.format(Date())
+                        val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
+                        val CD= sdfd.format(Date())
 
-                firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-                storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
-                val storageRef = storageReference!!.child(listUserId)
+                        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+                        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
+                        val storageRef = storageReference!!.child(listUserId)
+                        launchImageCrop(contentUri)
+                    }
 
-                val myRef = firebaseDatabase.child("Doctor").child(auth)
-                myRef.get().addOnSuccessListener {
-                    val name: String = it.child("doctorName").value.toString()
-                    val clinic: String = it.child("clinicName").value.toString()
-                    val id : String = it.child("id").value.toString()
-                        storageRef.child(id).child(f.name).putFile(contentUri).addOnSuccessListener {
-                        storageRef.child(id).child(f.name).downloadUrl.addOnSuccessListener { img ->
-                            val imageData: ImageModel = ImageModel(img.toString(), currentDate, currentTime)
-                            val detailImageData : DetailImageModel = DetailImageModel(img.toString(), currentDate, currentTime, name, clinic)
-                            firebaseDatabase.child("Users")
-                                .child(listUserId)
-                                .child("Medical_Records").child(id).child(CD)
-                                .setValue(imageData).addOnSuccessListener {
-                                    firebaseDatabase.child("Users")
-                                        .child(listUserId).child("Medical_Records").child("Entire_Records").child(CD)
-                                        .setValue(detailImageData).addOnSuccessListener {
-                                            progressDialog.dismiss()
-                                            Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
-                                        }.addOnFailureListener { exc ->
-                                            Toast.makeText(context, exc.message, Toast.LENGTH_LONG).show()
-                                        }
-//                                    Entryrecord(contentUri, progressDialog, name, clinic, listUserId, id, f.name)
-                                }.addOnFailureListener { exp ->
-                                    Toast.makeText(context, exp.message, Toast.LENGTH_LONG).show()
-                                }
-                        }.addOnFailureListener {
-                            Log.i("Error", it.message.toString())
-                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                            if (progressDialog.isShowing)
-                                progressDialog.dismiss()
+                    if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+                        val resultUri = CropImage.getActivityResult(data)
+                        if(resultUri == null){
+                            progressDialog.dismiss()
+                            return
+                        }else{
+                            if(Build.VERSION.SDK_INT < 29){
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArray()
+                            }else{
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArray()
+                            }
                         }
                     }
+                    if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE){
+                        progressDialog.dismiss()
+                        Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+                    }
+
                 }
             }
         }
     }
+
 
     private fun showRationalDialogForPermission(){
         AlertDialog.Builder(context).setMessage("It seems that you have declined the permissions to access the feature, " +
@@ -583,12 +586,6 @@ class DoctorHome : Fragment() {
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        println("This is on Destroy")
-        _binding = null
-    }
-
     private fun createImageFile(): File {
         // Create an image file name
 
@@ -607,10 +604,34 @@ class DoctorHome : Fragment() {
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.absolutePath
         return image
-
     }
 
-    private fun Entryrecord(contentUri : Uri, dialog: ProgressDialog, name : String, clinic : String, id : String, authId : String, fname : String){
+    private fun launchImageCrop(uri : Uri){
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(10, 20)
+                .setMaxCropResultSize(2250, 4000)
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .start(it, this)
+        } ?: progressDialog.dismiss()
+    }
+
+    private fun byteArray(){
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos)
+        dataArray = baos.toByteArray()
+        setImage(dataArray)
+    }
+
+    private fun setImage(croppedImage : ByteArray){
+        progressDialog.show()
+        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
+        val storageRef = storageReference!!.child(listUserId)
+
+        println("Not able to set the image to firebase database")
+
         val sdf = SimpleDateFormat("dd-MM-YYYY")
         val tf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date()).toString()
@@ -619,26 +640,42 @@ class DoctorHome : Fragment() {
         val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
         val CD= sdfd.format(Date())
 
-        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
-        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
-
-        storageReference!!.child(id).child("Entire_History").child(fname).putFile(contentUri).addOnSuccessListener {
-            storageReference!!.child(id).child("Entire_History").child(fname).downloadUrl.addOnSuccessListener {
-                val imageData : DetailImageModel = DetailImageModel(it.toString(), currentDate.toString(), currentTime.toString(), name, clinic)
-                firebaseDatabase.child("Users")
-                    .child(listUserId)
-                    .child("Medical_Records").child("Entire_Records").child(CD)
-                    .setValue(imageData).addOnSuccessListener {
-                        if(dialog.isShowing)
-                            dialog.dismiss()
-                        Toast.makeText(context, "Images Updated Successfully",Toast.LENGTH_LONG).show()
-                    }
-            }.addOnFailureListener {
-                Log.i("Error", it.message.toString())
-                Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
-                if(dialog.isShowing)
-                    dialog.dismiss()
+        val myRef = firebaseDatabase.child("Doctor").child(auth)
+        myRef.get().addOnSuccessListener {
+            val name: String = it.child("doctorName").value.toString()
+            val clinic: String = it.child("clinicName").value.toString()
+            val id : String = it.child("id").value.toString()
+            storageRef.child(id).child(f.name).putBytes(croppedImage).addOnSuccessListener {
+                storageRef.child(id).child(f.name).downloadUrl.addOnSuccessListener { img ->
+                    val imageData: ImageModel = ImageModel(img.toString(), currentDate, currentTime)
+                    val detailImageData : DetailImageModel = DetailImageModel(img.toString(), currentDate, currentTime, name, clinic)
+                    firebaseDatabase.child("Users")
+                        .child(listUserId)
+                        .child("Medical_Records").child(id).child(CD)
+                        .setValue(imageData).addOnSuccessListener {
+                            firebaseDatabase.child("Users")
+                                .child(listUserId).child("Medical_Records").child("Entire_Records").child(CD)
+                                .setValue(detailImageData).addOnSuccessListener {
+                                    progressDialog.dismiss()
+                                    Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
+                                }.addOnFailureListener { exc ->
+                                    progressDialog.dismiss()
+                                    Toast.makeText(context, exc.message, Toast.LENGTH_LONG).show()
+                                }
+                        }.addOnFailureListener { exp ->
+                            progressDialog.dismiss()
+                            Toast.makeText(context, exp.message, Toast.LENGTH_LONG).show()
+                        }
+                }.addOnFailureListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
             }
         }
+    }
+ }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

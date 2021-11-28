@@ -29,7 +29,7 @@ class FirebaseSearchAdapter : RecyclerView.Adapter<FirebaseSearchAdapter.MyViewH
         val doctor : Doctor = list[position]
         holder.hospitalName.text= doctor.ClinicName
         holder.doctorName.text = doctor.DoctorName
-        Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.into(holder.image)
+        Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.into(holder.image)
 
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, Booking::class.java)
