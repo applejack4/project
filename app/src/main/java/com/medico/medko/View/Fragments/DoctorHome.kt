@@ -404,10 +404,13 @@ class DoctorHome : Fragment() {
             "December"
         )
         val month = monthName[c[Calendar.MONTH]]
+        println("Month name:$month")
         val year = c[Calendar.YEAR]
         val date = c[Calendar.DATE]
 
         val num : String = "$date $month $year"
+
+
 
         val progress = ProgressDialog(context)
         progress.setMessage("Removing")
@@ -436,14 +439,11 @@ class DoctorHome : Fragment() {
                                 val time : String = it.child("time").value.toString()
                                 val savingDate : String = currentDate.toString()
                                 val savingModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic, currentTime, currentDate)
-                                val dataWrapModel = OnlyDate(num.toString(), "data")
-
-
-                                firebaseDatabase.child("Doctor").child(userid).child("History").child(num).child("data").child(totalListSize.toString()).setValue(savingModel).addOnSuccessListener {
+                                firebaseDatabase.child("Doctor").child(userid).child("History").child(idUser).setValue(savingModel).addOnSuccessListener {
                                     model.deleteUser(position)
                                     firebaseDatabase.child("Doctor").child(userid).child("Online_Appointment").child(id).removeValue().
                                     addOnSuccessListener {
-                                        appointmentAdapter = AppointmentAdapter(this@DoctorHome)
+                                        appointmentAdapter = AppointmentAdapter(this)
                                         val adapter = appointmentAdapter
                                         adapter.appointmentList(list)
                                         adapter.notifyItemRemoved(position)
@@ -459,7 +459,6 @@ class DoctorHome : Fragment() {
                                     Toast.makeText(context, "Failed to remove", Toast.LENGTH_LONG).show()
                                     progress.dismiss()
                                 }
-
                             }
                         }
                     }
@@ -474,40 +473,40 @@ class DoctorHome : Fragment() {
                                 val savingDate : String = currentDate.toString()
                                 val dateModel : DateModel = DateModel(num)
                                 val appointModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic,currentTime, currentDate)
-                                    firebaseDatabase.child("Doctor").child(userid).child("History")
-                                        .child(idUser).setValue(appointModel)
-                                        .addOnSuccessListener {
-                                            model.deleteOfflineUser(position)
-                                            firebaseDatabase.child("Doctor").child(userid)
-                                                .child("Offline_Appointment").child(id)
-                                                .removeValue().addOnSuccessListener {
-                                                    appointmentAdapter = AppointmentAdapter(this)
-                                                    val adapter = appointmentAdapter
-                                                    adapter.appointmentList(list)
-                                                    adapter.notifyItemRemoved(position)
-                                                    adapter.notifyItemRangeChanged(
-                                                        position,
-                                                        list.size
-                                                    )
-                                                    adapter.notifyDataSetChanged()
-                                                    onResume()
-                                                    progress.dismiss()
-                                                }.addOnFailureListener {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Failed to remove",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
-                                                    progress.dismiss()
-                                                }
-                                        }.addOnFailureListener {
-                                            Toast.makeText(
-                                                context,
-                                                "Failed to remove",
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                            progress.dismiss()
-                                        }
+                                firebaseDatabase.child("Doctor").child(userid).child("History")
+                                    .child(idUser).setValue(appointModel)
+                                    .addOnSuccessListener {
+                                        model.deleteOfflineUser(position)
+                                        firebaseDatabase.child("Doctor").child(userid)
+                                            .child("Offline_Appointment").child(id)
+                                            .removeValue().addOnSuccessListener {
+                                                appointmentAdapter = AppointmentAdapter(this)
+                                                val adapter = appointmentAdapter
+                                                adapter.appointmentList(list)
+                                                adapter.notifyItemRemoved(position)
+                                                adapter.notifyItemRangeChanged(
+                                                    position,
+                                                    list.size
+                                                )
+                                                adapter.notifyDataSetChanged()
+                                                onResume()
+                                                progress.dismiss()
+                                            }.addOnFailureListener {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Failed to remove",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                progress.dismiss()
+                                            }
+                                    }.addOnFailureListener {
+                                        Toast.makeText(
+                                            context,
+                                            "Failed to remove",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        progress.dismiss()
+                                    }
                             }
                         }
                     }
