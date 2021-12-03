@@ -29,6 +29,7 @@ class FirebaseSearchAdapter : RecyclerView.Adapter<FirebaseSearchAdapter.MyViewH
         val doctor : Doctor = list[position]
         holder.hospitalName.text= doctor.ClinicName
         holder.doctorName.text = doctor.DoctorName
+        activity.let {  }
         Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.into(holder.image)
 
         holder.itemView.setOnClickListener {

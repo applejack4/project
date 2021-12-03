@@ -29,7 +29,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       val appointModel : AppointConstructor = list[position]
+        val appointModel : AppointConstructor = list[position]
         holder.name.text = appointModel.name
         holder.date.text = appointModel.date
         holder.call.setOnClickListener {

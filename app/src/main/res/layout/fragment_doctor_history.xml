@@ -46,13 +46,12 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@color/gray"
         app:layout_constraintTop_toBottomOf="@id/text_home"
         tools:layout_editor_absoluteX="39dp" />
 
-    <LinearLayout
-        android:layout_marginTop="@dimen/_10sdp"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/view"
@@ -60,16 +59,16 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layoutDirection="ltr">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        tools:listitem="@layout/doctor_history_item"/>
-    </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:listitem="@layout/recyclerviewsubitem" />
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

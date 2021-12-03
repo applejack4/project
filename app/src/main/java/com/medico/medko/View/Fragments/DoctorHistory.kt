@@ -1,5 +1,6 @@
 package com.medico.medko.View.Fragments
 
+import HistoryViewModel
 import android.Manifest
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.medico.medko.View.Adapters.HistoryAdapter
-import com.medico.medko.viewModel.HistoryViewModel
 import com.google.firebase.auth.FirebaseAuth
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -58,24 +58,24 @@ class DoctorHistory : Fragment() {
         adapter.passingFragment(this)
 
         model.getTitleHistory().observe(viewLifecycleOwner, {
-            history ->
+                history ->
             run {
                 history.let {
                     _binding!!.RecyclerView.adapter = adapter
                     when(it){
-                     it ->{
-                         if (it.isNotEmpty() || it.size > 0){
-                             _binding!!.RecyclerView.visibility = View.VISIBLE
-                             _binding!!.noHistory.visibility = View.GONE
-                             adapter.appointmentList(it)
-                             println("SIze of it is ${it.size}")
-                         }
-                         if(it.isEmpty() || it.size == 0){
-                             _binding!!.RecyclerView.visibility = View.GONE
-                             _binding!!.noHistory.visibility = View.VISIBLE
-                             _binding!!.noHistory.text = "You have no Patient's History/Empty"
-                         }
-                     }
+                        it ->{
+                            if (it.isNotEmpty() || it.size > 0){
+                                _binding!!.RecyclerView.visibility = View.VISIBLE
+                                _binding!!.noHistory.visibility = View.GONE
+                                adapter.appointmentList(it)
+                                println("SIze of it is ${it.size}")
+                            }
+                            if(it.isEmpty() || it.size == 0){
+                                _binding!!.RecyclerView.visibility = View.GONE
+                                _binding!!.noHistory.visibility = View.VISIBLE
+                                _binding!!.noHistory.text = "You have no Patient's History/Empty"
+                            }
+                        }
                     }
                 }
 

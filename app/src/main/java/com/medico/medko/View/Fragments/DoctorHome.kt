@@ -41,7 +41,6 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
-import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.coroutines.CoroutineScope
@@ -53,6 +52,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 class DoctorHome : Fragment() {
     private lateinit var firebaseDatabase : DatabaseReference
@@ -73,6 +73,7 @@ class DoctorHome : Fragment() {
     private lateinit var dataArray : ByteArray
     private lateinit var auth : String
     private lateinit var progressDialog : ProgressDialog
+    private lateinit var totalListSize : String
 
     companion object {
         private const val CAMERA = 42
@@ -80,6 +81,51 @@ class DoctorHome : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val c = Calendar.getInstance()
+        val monthName = arrayOf(
+            "January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November",
+            "December"
+        )
+        val month = monthName[c[Calendar.MONTH]]
+        val year = c[Calendar.YEAR]
+        val date = c[Calendar.DATE]
+
+        val num : String = "$date $month $year"
+
+        auth = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        val checkRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+            .getReference("AppUsers").child("Doctor")
+
+
+        checkRef.child(auth)
+            .child("History").child(num).child("data").addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var sizeList : ArrayList<AppointConstructor> = ArrayList<AppointConstructor>()
+                    if(snapshot.exists()){
+                        sizeList.clear()
+                        for (obj in snapshot.children){
+                            val addDate = obj.getValue(AppointConstructor::class.java)
+                            if (addDate != null) {
+                                sizeList.add(addDate)
+                            }
+                        }
+                        totalListSize = (sizeList.size + 1).toString()
+                    }else{
+                        totalListSize = (0).toString()
+                        return
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                }
+            })
+
+
+
         firebaseAuth = FirebaseAuth.getInstance()
         var firebaseToken : String ?= null
         var key : String ?= null
@@ -93,6 +139,26 @@ class DoctorHome : Fragment() {
 
         val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
             .getReference("AppUsers").child("Doctor").child(currentUser)
+
+        val defaultDate = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+            .getReference("AppUsers").child("Doctor").child(currentUser)
+
+        val defOnlyDate : OnlyDate = OnlyDate(num, "data")
+
+        defaultDate.child("History").child(num).child("data").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    return
+                }else{
+                    defaultDate.child("History").child(num).setValue(defOnlyDate)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("error", error.message)
+            }
+
+        })
 
         val friends: MutableList<String?> = ArrayList()
 
@@ -162,7 +228,7 @@ class DoctorHome : Fragment() {
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         firebaseAuth = FirebaseAuth.getInstance()
         val model : AppointmentViewModel by viewModels()
-        appointmentViewModel = ViewModelProvider(this).get(AppointmentViewModel::class.java)
+//        appointmentViewModel = ViewModelProvider(this)[AppointmentViewModel::class.java]
 
         firebaseDatabase.child("Doctor").child(userId).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -228,6 +294,7 @@ class DoctorHome : Fragment() {
 
         val job = Job()
         val uiScope = CoroutineScope(Dispatchers.Main + job)
+
 
 
 
@@ -342,8 +409,6 @@ class DoctorHome : Fragment() {
 
         val num : String = "$date $month $year"
 
-
-
         val progress = ProgressDialog(context)
         progress.setMessage("Removing")
         progress.setCancelable(false)
@@ -371,11 +436,14 @@ class DoctorHome : Fragment() {
                                 val time : String = it.child("time").value.toString()
                                 val savingDate : String = currentDate.toString()
                                 val savingModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic, currentTime, currentDate)
-                                firebaseDatabase.child("Doctor").child(userid).child("History").child(idUser).setValue(savingModel).addOnSuccessListener {
+                                val dataWrapModel = OnlyDate(num.toString(), "data")
+
+
+                                firebaseDatabase.child("Doctor").child(userid).child("History").child(num).child("data").child(totalListSize.toString()).setValue(savingModel).addOnSuccessListener {
                                     model.deleteUser(position)
                                     firebaseDatabase.child("Doctor").child(userid).child("Online_Appointment").child(id).removeValue().
                                     addOnSuccessListener {
-                                        appointmentAdapter = AppointmentAdapter(this)
+                                        appointmentAdapter = AppointmentAdapter(this@DoctorHome)
                                         val adapter = appointmentAdapter
                                         adapter.appointmentList(list)
                                         adapter.notifyItemRemoved(position)
@@ -391,6 +459,7 @@ class DoctorHome : Fragment() {
                                     Toast.makeText(context, "Failed to remove", Toast.LENGTH_LONG).show()
                                     progress.dismiss()
                                 }
+
                             }
                         }
                     }

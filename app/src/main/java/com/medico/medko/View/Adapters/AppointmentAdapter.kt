@@ -40,7 +40,6 @@ class AppointmentAdapter(private val fragment : Fragment) :
         holder.time.text = appointConstructor.Time
         fragment.context?.let { Glide.with(it).load(appointConstructor.profilePic).centerCrop().into(holder.image) }
 
-
         holder.call.setOnClickListener {
             if(fragment is DoctorHome){
                 val number : String = appointConstructor.mobile.toString()

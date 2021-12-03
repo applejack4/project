@@ -20,7 +20,6 @@ class SubItemAdapter : RecyclerView.Adapter<SubItemAdapter.MyViewHolder>() {
         val image = view.historyImage
         val name = view.HistoryName
         val call = view.HistoryCall
-        val date = view.HistoryDate
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

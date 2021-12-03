@@ -1,13 +1,15 @@
 package com.medico.medko.View.Adapters
 
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.medico.medko.View.Activities.PaymentActivity
 import com.medico.medko.View.Fragments.Qrcode
 import com.medico.medko.databinding.DialogCustomItemBinding
 
-class PaymentAdapter(private val fragment : Fragment,
+class PaymentAdapter(private val activity : Activity,
                      private val list: List<String>,
                      private val selectedItem : String) : RecyclerView.Adapter<PaymentAdapter.ViewHolder>() {
 
@@ -16,7 +18,7 @@ class PaymentAdapter(private val fragment : Fragment,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding : DialogCustomItemBinding = DialogCustomItemBinding.inflate(LayoutInflater.from(fragment.context), parent, false)
+        val binding : DialogCustomItemBinding = DialogCustomItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -25,8 +27,8 @@ class PaymentAdapter(private val fragment : Fragment,
         holder.txtView.text = item
 
         holder.itemView.setOnClickListener {
-            if(fragment is Qrcode){
-                fragment.selectedListItem(item, selectedItem)
+            if(activity is PaymentActivity){
+                activity.selectedListItem(item, selectedItem)
             }
         }
     }
