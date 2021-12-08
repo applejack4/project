@@ -18,7 +18,6 @@ import com.medico.medko.View.Fragments.Qrcode
 import com.medico.medko.databinding.ActivityPaymentBinding
 import com.medico.medko.databinding.DialogCustomListBinding
 import com.medico.medko.utils.Payment
-import com.medico.medko.viewModel.HistoryViewModel
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import org.json.JSONObject
@@ -37,6 +36,8 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener{
     private lateinit var advAmount : String
     private lateinit var dName : String
     private lateinit var fbId : String
+    private lateinit var mail : String
+    private lateinit var phone : String
 
     private fun initViews() {
         val transactionId = "TID" + System.currentTimeMillis()
@@ -83,6 +84,9 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener{
                     gpay = snapshot.child("gPay").value.toString()
                     pPay = snapshot.child("pPay").value.toString()
                     paytm = snapshot.child("paytm").value.toString()
+                    phone = snapshot.child("mobile").value.toString()
+                    mail = snapshot.child("email").value.toString()
+
                     _binding.PaymentAmountTIE.setText(advAmount)
                 }
             }
@@ -175,8 +179,8 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener{
             options.put("currency", "INR")
 
             options.put("amount", "${(amount * 100)}")
-            options.put("prefill.email", "zacksuhail@gmail.com")
-            options.put("prefill.contact", "8008535097")
+            options.put("prefill.email", mail)
+            options.put("prefill.contact", phone)
 
             checkout.open(this, options)
         }catch (e : Exception){
@@ -190,6 +194,6 @@ class PaymentActivity : AppCompatActivity(), PaymentResultListener{
     }
 
     override fun onPaymentError(p0: Int, fail : String?) {
-        Toast.makeText(this, fail.toString(), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "payment cancelled.", Toast.LENGTH_LONG).show()
     }
 }

@@ -25,12 +25,12 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import kotlin.properties.Delegates
 
 class DoctorHistory : Fragment() {
 
     private var _binding : FragmentDoctorHistoryBinding?= null
     private lateinit var auth: FirebaseAuth
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +57,7 @@ class DoctorHistory : Fragment() {
         val adapter = HistoryAdapter()
         adapter.passingFragment(this)
 
+
         model.getTitleHistory().observe(viewLifecycleOwner, {
                 history ->
             run {
@@ -68,7 +69,6 @@ class DoctorHistory : Fragment() {
                                 _binding!!.RecyclerView.visibility = View.VISIBLE
                                 _binding!!.noHistory.visibility = View.GONE
                                 adapter.appointmentList(it)
-                                println("SIze of it is ${it.size}")
                             }
                             if(it.isEmpty() || it.size == 0){
                                 _binding!!.RecyclerView.visibility = View.GONE

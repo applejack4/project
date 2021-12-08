@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.AppointConstructor
 import com.medico.medko.R
 import com.medico.medko.View.Fragments.DoctorHistory
@@ -39,6 +40,10 @@ class SubItemAdapter : RecyclerView.Adapter<SubItemAdapter.MyViewHolder>() {
         }
 
         Picasso.get().load(subItem.profilePic).placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        fragment.context?.let {
+            Glide.with(it).asBitmap().load(subItem.profilePic).fitCenter()
+                .placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        }
     }
 
     override fun getItemCount(): Int {

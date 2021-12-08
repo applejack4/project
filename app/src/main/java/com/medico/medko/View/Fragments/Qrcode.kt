@@ -1,5 +1,6 @@
 package com.medico.medko.View.Fragments
 
+import HistoryViewModel
 import android.annotation.SuppressLint
 import android.content.Context
 
@@ -13,7 +14,6 @@ import android.content.Intent
 import androidx.fragment.app.viewModels
 import com.medico.medko.View.Activities.PaymentActivity
 import com.medico.medko.viewModel.AppointmentViewModel
-import com.medico.medko.viewModel.HistoryViewModel
 import java.lang.RuntimeException
 
 
@@ -31,7 +31,6 @@ class Qrcode : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val model : HistoryViewModel by viewModels()
         id = activity?.intent?.extras?.getString("id_firebase").toString()
 
         _binding.PaymentSubmission.setOnClickListener {

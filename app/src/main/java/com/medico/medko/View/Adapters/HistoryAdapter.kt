@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.AppointConstructor
+import com.medico.medko.R
 import com.medico.medko.View.Fragments.DoctorHistory
 import com.medico.medko.databinding.DoctorHistoryItemBinding
 
@@ -22,7 +24,6 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.MyViewHolder>() {
         val date = view.HistoryDate
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding : DoctorHistoryItemBinding = DoctorHistoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
@@ -32,6 +33,12 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.MyViewHolder>() {
         val appointModel : AppointConstructor = list[position]
         holder.name.text = appointModel.name
         holder.date.text = appointModel.date
+        fragment.context.let {
+            if (it != null) {
+                Glide.with(it).load(appointModel.profilePic).centerCrop().placeholder(
+                    R.drawable.ic_baseline_account_circle_24).into(holder.image)
+            }
+        }
         holder.call.setOnClickListener {
             if(fragment is DoctorHistory){
                 val number : String = appointModel.mobile.toString()

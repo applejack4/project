@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.medico.medko.Model.ImageModel
 import com.medico.medko.R
+import com.medico.medko.View.Activities.UserRecords
+import com.medico.medko.View.Fragments.MyHistory
 import com.medico.medko.databinding.MyRecordsBinding
 import com.squareup.picasso.Picasso
 
@@ -31,8 +33,15 @@ class MyRecordAdapter : RecyclerView.Adapter<MyRecordAdapter.MyViewHolder>() {
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val imageModel : ImageModel = list[position]
-        holder.date.text = imageModel.date
-        fragment.context?.let { Glide.with(it).asBitmap().load(imageModel.Image).centerCrop().into(holder.image) }
+        if(fragment is MyHistory){
+            holder.date.text = imageModel.date
+            fragment.context?.let { Glide.with(it).asBitmap().load(imageModel.Image).centerCrop().into(holder.image) }
+        }
+
+        if (activity is UserRecords){
+            holder.date.text = imageModel.date
+            activity.applicationContext?.let { Glide.with(it).asBitmap().load(imageModel.Image).centerCrop().into(holder.image) }
+        }
     }
 
     override fun getItemCount(): Int {

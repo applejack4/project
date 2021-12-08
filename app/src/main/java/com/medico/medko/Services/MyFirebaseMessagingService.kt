@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.medico.medko.Model.Token
+import com.medico.medko.View.Activities.UserRecords
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,15 +58,79 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
                 AppConstants.REVIEW ->{
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
-                        println("Current version is greater than Android Oreo${Build.VERSION.SDK_INT.toString()}")
                         createReviewOreoNotification(title.toString(), message!!, hisId!!)
                     } else {
-                        println("Current version is Lower than Android Oreo${Build.VERSION.SDK_INT.toString()}")
                         createReviewNormalNotification(title.toString(), message!!, hisId!!)
+                    }
+                }
+                AppConstants.PRESCRIPTION ->{
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                        println("Current version is greater than Android Oreo${Build.VERSION.SDK_INT.toString()}")
+                        createRecordOreoNotification(title.toString(), message!!, hisId!!)
+                    } else {
+                        println("Current version is Lower than Android Oreo${Build.VERSION.SDK_INT.toString()}")
+                        createRecordNormalNotification(title.toString(), message!!, hisId!!)
                     }
                 }
             }
         }
+    }
+
+    private fun createRecordNormalNotification(title: String, message: String, hisId: String) {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val builder = NotificationCompat.Builder(this, AppConstants.CHANNEL_ID)
+        builder.setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSmallIcon(R.drawable.check)
+            .setAutoCancel(true)
+            .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+            .setSound(uri)
+
+        val intent = Intent(this, UserRecords::class.java)
+
+        intent.putExtra("hisId", hisId)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        builder.setContentIntent(pendingIntent)
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(Random().nextInt(85 - 65), builder.build())
+    }
+
+    private fun createRecordOreoNotification(title : String, message: String, hisId: String) {
+        val channel = NotificationChannel(
+            AppConstants.CHANNEL_ID,
+            "Message",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+
+        channel.setShowBadge(true)
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
+
+        val intent = Intent(this, UserRecords::class.java)
+
+        intent.putExtra("hisId", hisId)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+
+        val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setSmallIcon(R.drawable.check)
+            .setAutoCancel(true)
+            .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
+            .setContentIntent(pendingIntent)
+            .build()
+
+        manager.notify(100, notification)
     }
 
     private fun createReviewNormalNotification(title : String, message: String, hisId: String) {
@@ -178,6 +243,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setSound(uri)
 
+
         val intent = Intent(this, DoctorMainPage::class.java)
 
         intent.putExtra("hisId", hisId)
@@ -187,7 +253,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         builder.setContentIntent(pendingIntent)
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(Random().nextInt(85 - 65), builder.build())
-
     }
 
 

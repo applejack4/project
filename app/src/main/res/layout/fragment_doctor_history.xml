@@ -67,8 +67,7 @@
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:listitem="@layout/recyclerviewsubitem" />
+            app:layout_constraintRight_toRightOf="parent"/>
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

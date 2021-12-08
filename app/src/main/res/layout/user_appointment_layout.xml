@@ -8,6 +8,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/roundedcardradius"
     android:layout_marginTop="@dimen/_10sdp">
 
     <androidx.constraintlayout.widget.ConstraintLayout

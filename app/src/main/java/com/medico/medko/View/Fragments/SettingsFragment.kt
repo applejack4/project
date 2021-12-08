@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.User
 import com.medico.medko.R
 import com.medico.medko.View.Activities.ChangePassword
@@ -31,6 +32,7 @@ import com.medico.medko.databinding.FragmentSettingsBinding
 import com.medico.medko.viewModel.NotificationsViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
@@ -69,7 +71,7 @@ class SettingFragment : Fragment() {
     savedInstanceState: Bundle?
   ): View {
     notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        ViewModelProvider(this)[NotificationsViewModel::class.java]
 
       firebaseAuth = FirebaseAuth.getInstance()
 
@@ -134,8 +136,11 @@ class SettingFragment : Fragment() {
                         if (user != null) {
                             _binding?.UserPermanentName?.text = user.firstname
                             _binding?.UserPermanentMobile?.text = user.mobile
-                            Picasso.get().load(user.profilePicture)?.fit()?.centerInside()?.placeholder(
-                                R.drawable.ic_baseline_account_circle_24)?.into(_binding?.ImageProfile)
+                            context?.let { _binding?.ImageProfile?.let { it1 ->
+                                Glide.with(it).asBitmap().load(user.profilePicture).centerInside().placeholder(R.drawable.ic_baseline_account_circle_24).into(
+                                    it1
+                                )
+                            } }
                         }
                     }
                 }
@@ -204,9 +209,66 @@ class SettingFragment : Fragment() {
         }
 
         _binding!!.BtnLogout.setOnClickListener {
-            firebaseAuth.signOut()
-            activity?.finish()
-            startActivity(Intent(context, MainActivity::class.java))
+            currentId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+            var token1 : String ?= null
+            var key: String?= null
+            val friends: MutableList<String?> = ArrayList()
+
+            FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                if(it.isComplete){
+                    token1 = it.result.toString()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+            }
+
+            val keyListener: ValueEventListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        for (obj in dataSnapshot.children){
+                            key = obj.key.toString()
+                        }
+                    }
+                    val delRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
+                        .child("Users").child(currentId.toString())
+                        .child("Token").child(key.toString()).removeValue()
+                    delRef.addOnSuccessListener {
+                        firebaseAuth.signOut()
+                        requireActivity().finish()
+                        startActivity(Intent(context, MainActivity::class.java))
+                    }.addOnFailureListener {
+                        println("Not Removed.")
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Toast.makeText(context, databaseError.message, Toast.LENGTH_LONG).show()
+                }
+            }
+
+            val ref = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").
+            child("Users").child(currentId.toString()).child("Token")
+            val eventListener: ValueEventListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    friends.clear()
+                    for (ds in dataSnapshot.children) {
+                        val friend : String = ds.child("token").value.toString()
+                        friends.add(friend)
+                    }
+
+                    val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+                        .getReference("AppUsers").child("Users").child(currentId.toString()).child("Token")
+                        .orderByChild("token").equalTo(token1)
+                    myRef.addListenerForSingleValueEvent(keyListener)
+
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Toast.makeText(context, databaseError.message, Toast.LENGTH_LONG).show()
+                }
+            }
+
+            ref.addListenerForSingleValueEvent(eventListener)
         }
     }
 
@@ -347,5 +409,10 @@ override fun onDestroyView() {
         println("This is the baos result $dataArray This Would be the imageSize. ${dataArray.size.toByte()}")
         Toast.makeText(context, "Working shiz...", Toast.LENGTH_LONG).show()
         setImage(dataArray)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

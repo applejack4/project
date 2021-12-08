@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.medico.medko.Model.AppointConstructor
+import com.medico.medko.R
 import com.medico.medko.View.Activities.PatientsDetails
 import com.medico.medko.View.Fragments.DoctorHome
 import com.medico.medko.databinding.UserAppointmentLayoutBinding
-import com.squareup.picasso.Picasso
 
 class AppointmentAdapter(private val fragment : Fragment) :
     RecyclerView.Adapter<AppointmentAdapter.MyViewHolder>() {
@@ -38,7 +38,8 @@ class AppointmentAdapter(private val fragment : Fragment) :
         val appointConstructor : AppointConstructor = list[position]
         holder.name.text = appointConstructor.name
         holder.time.text = appointConstructor.Time
-        fragment.context?.let { Glide.with(it).load(appointConstructor.profilePic).centerCrop().into(holder.image) }
+        fragment.context?.let { Glide.with(it).load(appointConstructor.profilePic).centerCrop().placeholder(
+            R.drawable.ic_baseline_account_circle_24).into(holder.image) }
 
         holder.call.setOnClickListener {
             if(fragment is DoctorHome){
@@ -63,7 +64,7 @@ class AppointmentAdapter(private val fragment : Fragment) :
 
         holder.camera.setOnClickListener {
             if(fragment is DoctorHome){
-                fragment.camera(appointConstructor.id.toString())
+                fragment.camera(appointConstructor.id.toString(), appointConstructor.name.toString())
             }
         }
     }

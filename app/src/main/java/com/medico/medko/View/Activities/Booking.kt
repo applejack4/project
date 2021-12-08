@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.Token
 import com.medico.medko.databinding.ActivityBookingBinding
 
@@ -109,8 +110,8 @@ class Booking : AppCompatActivity() {
         _binding.BookingClinicName.text = clinicName
         _binding.BookingSpeciality.text = speciality
         _binding.DoctorStatus.text = status
-        Picasso.get().load(profilePicture)?.fit()?.centerInside()?.placeholder(R.drawable.ic_baseline_account_circle_24)
-            ?.into(_binding.BookingProfileImage)
+        Glide.with(applicationContext).asBitmap().load(profilePicture).fitCenter()
+            .placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.BookingProfileImage)
 
         appointList = ArrayList<AppointConstructor>()
         val doctorUserid = intent.getStringExtra("id").toString()
@@ -321,7 +322,7 @@ class Booking : AppCompatActivity() {
     private fun getToken() {
         val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").
         getReference("AppUsers").child("Doctor")
-            .child(hisId!!).child("Token")
+            .child(hisId).child("Token")
 
         val list : ArrayList<Token> = arrayListOf()
         val friends: MutableList<String?> = ArrayList()

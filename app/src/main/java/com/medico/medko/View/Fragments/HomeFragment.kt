@@ -1,23 +1,32 @@
 package com.medico.medko.View.Fragments
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.medico.medko.Model.SliderItem
+import com.medico.medko.Model.Token
 import com.medico.medko.R
 import com.medico.medko.View.Activities.SpecificDoctorList
 import com.medico.medko.View.Adapters.SliderAdapter
 import com.medico.medko.viewModel.HomeViewModel
 import com.medico.medko.databinding.FragmentHomeBinding
 import java.lang.Math.abs
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
 
@@ -25,6 +34,72 @@ class HomeFragment : Fragment() {
   private var _binding: FragmentHomeBinding? = null
     private lateinit var viewPager2: ViewPager2
     private val sliderHandler = Handler()
+    private lateinit var token1 : String
+    private lateinit var auth : String
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if(it.isComplete){
+                token1 = it.result.toString()
+            }
+        }.addOnFailureListener {
+            Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+        }
+
+        val sdt = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
+        val currentDate = sdt.format(Date())
+
+        auth = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+            .getReference("AppUsers").child("Users").child(auth)
+
+        val friends: MutableList<String?> = ArrayList()
+
+        myRef.child("Token").orderByChild("token").addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                when (snapshot) {
+                    snapshot -> {
+                        if (snapshot.exists()) {
+                            myRef.child("Token").orderByChild("token").equalTo(token1)
+                                .addListenerForSingleValueEvent(object : ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if(snapshot.exists()){
+                                            for (obj in snapshot.children){
+                                                val friend : String = obj.child("token").value.toString()
+                                                friends.add(friend)
+                                            }
+                                        }
+                                        if(friends.contains(token1)){
+                                            return
+                                        }else{
+                                            val token : Token = Token(token1)
+                                            myRef.child("Token").child(currentDate).setValue(token)
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+                                    }
+
+                                })
+                        }
+                        if (!snapshot.exists()) {
+                            val token : Token = Token(token1)
+                            myRef.child("Token").child(currentDate).setValue(token)
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+            }
+
+        })
+    }
 
   override fun onCreateView(
     inflater: LayoutInflater,

@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide
 import com.medico.medko.Model.DetailImageModel
 import com.medico.medko.R
 import com.medico.medko.databinding.EntireRecordBinding
-import com.squareup.picasso.Picasso
 
 class EntireRecordAdapter(private var fragment : Fragment) : RecyclerView.Adapter<EntireRecordAdapter.MyViewHolder>() {
 

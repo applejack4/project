@@ -65,7 +65,6 @@ class SpecificDoctorList : AppCompatActivity() {
                     })
                 }
                 if(receivedIntent == "My Doctors/Records"){
-                    println("Works right for Hello.")
                     model.myDoctors(currentUserId).observe(this, {
                         doctors ->
                         run {

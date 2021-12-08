@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.ReviewMode
 import com.medico.medko.R
 import com.medico.medko.View.Fragments.DoctorReview
@@ -32,6 +33,10 @@ class ReviewAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Revie
         holder.name.text = review.name
         holder.message.text = review.review
         Picasso.get().load(review.profilePic)?.fit()?.centerInside()?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(holder.image)
+        fragment.context?.let {
+            Glide.with(it).asBitmap().load(review.profilePic).fitCenter()
+                .placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        }
 
         holder.itemView.setOnClickListener {
             if(fragment is DoctorReview){

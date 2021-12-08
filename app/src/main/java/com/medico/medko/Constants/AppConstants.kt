@@ -11,5 +11,7 @@ interface AppConstants {
         const val BOOKED_APPOINTMENT = "Booked an appointment"
 
         const val REVIEW = "Added a Review"
+
+        const val PRESCRIPTION = "Uploaded your prescription."
     }
 }

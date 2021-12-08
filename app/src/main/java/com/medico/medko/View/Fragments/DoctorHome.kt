@@ -1,5 +1,6 @@
 package com.medico.medko.View.Fragments
 
+import HistoryViewModel
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -23,10 +24,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.medico.medko.Model.*
 import com.medico.medko.View.Adapters.AppointmentAdapter
-import com.medico.medko.databinding.FragmentDoctorHomeBinding
 import com.medico.medko.viewModel.AppointmentViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -41,11 +45,14 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import com.medico.medko.Constants.AppConstants
+import com.medico.medko.databinding.FragmentDoctorHomeBinding
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -74,6 +81,15 @@ class DoctorHome : Fragment() {
     private lateinit var auth : String
     private lateinit var progressDialog : ProgressDialog
     private lateinit var totalListSize : String
+    private lateinit var passedName : String
+    private lateinit var updateNumber : String
+    private lateinit var convertedNumber : String
+
+    private lateinit var entireHistoryCount : String
+    private lateinit var myHistoryCount : String
+    private lateinit var convertedEntireCount : String
+    private lateinit var convertedMyCount : String
+
 
     companion object {
         private const val CAMERA = 42
@@ -103,7 +119,7 @@ class DoctorHome : Fragment() {
         checkRef.child(auth)
             .child("History").child(num).child("data").addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var sizeList : ArrayList<AppointConstructor> = ArrayList<AppointConstructor>()
+                    val sizeList : ArrayList<AppointConstructor> = ArrayList<AppointConstructor>()
                     if(snapshot.exists()){
                         sizeList.clear()
                         for (obj in snapshot.children){
@@ -139,26 +155,6 @@ class DoctorHome : Fragment() {
 
         val myRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
             .getReference("AppUsers").child("Doctor").child(currentUser)
-
-        val defaultDate = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
-            .getReference("AppUsers").child("Doctor").child(currentUser)
-
-        val defOnlyDate : OnlyDate = OnlyDate(num, "data")
-
-        defaultDate.child("History").child(num).child("data").addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.exists()){
-                    return
-                }else{
-                    defaultDate.child("History").child(num).setValue(defOnlyDate)
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.i("error", error.message)
-            }
-
-        })
 
         val friends: MutableList<String?> = ArrayList()
 
@@ -224,6 +220,7 @@ class DoctorHome : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val userId = firebaseAuth.currentUser?.uid.toString()
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         firebaseAuth = FirebaseAuth.getInstance()
@@ -294,9 +291,6 @@ class DoctorHome : Fragment() {
 
         val job = Job()
         val uiScope = CoroutineScope(Dispatchers.Main + job)
-
-
-
 
         reference.get().addOnSuccessListener { it ->
             if(it.exists()){
@@ -395,6 +389,10 @@ class DoctorHome : Fragment() {
         val tf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date())
         val currentTime = tf.format(Date()).toString()
+        val userid : String = firebaseAuth.currentUser?.uid.toString()
+        val listValues : ArrayList<AppointConstructor> = arrayListOf()
+
+        println("$currentDate $currentTime")
 
 
         val c = Calendar.getInstance()
@@ -410,13 +408,34 @@ class DoctorHome : Fragment() {
 
         val num : String = "$date $month $year"
 
-
-
         val progress = ProgressDialog(context)
         progress.setMessage("Removing")
         progress.setCancelable(false)
 
-        val userid : String = firebaseAuth.currentUser?.uid.toString()
+        firebaseDatabase.child("Doctor").child(userid).child("History").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    listValues.clear()
+                    for (obj in snapshot.children){
+                        val items = obj.getValue(AppointConstructor::class.java)
+                        if(items != null){
+                            listValues.add(items)
+                        }
+                    }
+                    updateNumber = listValues.size.toString()
+                    println("Update number is $updateNumber")
+                    convertedNumber = (updateNumber.toInt() + 1).toString()
+                }else{
+                    println("Not exists.")
+                    convertedNumber = (1).toString()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("Error", error.message)
+            }
+
+        })
 
         dialog.setNegativeButton("No", DialogInterface.OnClickListener { dialogInterface, id ->
             dialogInterface.cancel()
@@ -424,6 +443,7 @@ class DoctorHome : Fragment() {
         dialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialogInterface, i ->
             dialogInterface.cancel()
             val model : AppointmentViewModel by viewModels()
+
             progress.show()
 
             val statusRef = firebaseDatabase.child("Doctor").child(userid)
@@ -438,8 +458,8 @@ class DoctorHome : Fragment() {
                                 val profilePic : String = it.child("profilePic").value.toString()
                                 val time : String = it.child("time").value.toString()
                                 val savingDate : String = currentDate.toString()
-                                val savingModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic, currentTime, currentDate)
-                                firebaseDatabase.child("Doctor").child(userid).child("History").child(idUser).setValue(savingModel).addOnSuccessListener {
+                                val savingModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic, currentTime, num)
+                                firebaseDatabase.child("Doctor").child(userid).child("History").child("$convertedNumber").setValue(savingModel).addOnSuccessListener {
                                     model.deleteUser(position)
                                     firebaseDatabase.child("Doctor").child(userid).child("Online_Appointment").child(id).removeValue().
                                     addOnSuccessListener {
@@ -472,9 +492,9 @@ class DoctorHome : Fragment() {
                                 val time : String = it.child("time").value.toString()
                                 val savingDate : String = currentDate.toString()
                                 val dateModel : DateModel = DateModel(num)
-                                val appointModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic,currentTime, currentDate)
+                                val appointModel : AppointConstructor = AppointConstructor(idUser, name, mobile, profilePic,currentTime, num)
                                 firebaseDatabase.child("Doctor").child(userid).child("History")
-                                    .child(idUser).setValue(appointModel)
+                                    .child("$convertedNumber").setValue(appointModel)
                                     .addOnSuccessListener {
                                         model.deleteOfflineUser(position)
                                         firebaseDatabase.child("Doctor").child(userid)
@@ -521,8 +541,9 @@ class DoctorHome : Fragment() {
         startActivity(intent)
     }
 
-    fun camera(id : String){
+    fun camera(id : String, name : String){
         listUserId = id
+        passedName = name
         Dexter.withContext(context).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA).withListener(object : MultiplePermissionsListener{
@@ -698,8 +719,6 @@ class DoctorHome : Fragment() {
         storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("Records")
         val storageRef = storageReference!!.child(listUserId)
 
-        println("Not able to set the image to firebase database")
-
         val sdf = SimpleDateFormat("dd-MM-YYYY")
         val tf = SimpleDateFormat("hh:mm:ss")
         val currentDate = sdf.format(Date()).toString()
@@ -707,6 +726,53 @@ class DoctorHome : Fragment() {
 
         val sdfd = SimpleDateFormat("dd:MM:yyyy hh:mm:ss")
         val CD= sdfd.format(Date())
+        val entireList : ArrayList<DetailImageModel> = arrayListOf()
+        val myList : ArrayList<ImageModel> = arrayListOf()
+
+        val countRefEntireHistory = firebaseDatabase.child("Users").child(listUserId).child("Medical_Records").child("Entire_Records")
+        val countRefMyHistory = firebaseDatabase.child("Users").child(listUserId).child("Medical_Records").child(auth)
+
+            countRefEntireHistory.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    entireList.clear()
+                    for(obj in snapshot.children){
+                        val items = snapshot.getValue(DetailImageModel::class.java)
+                        if (items != null) {
+                            entireList.add(items)
+                        }
+                    }
+                    entireHistoryCount = entireList.size.toString()
+                    convertedEntireCount = (entireHistoryCount.toInt() + 1).toString()
+                }else{
+                    convertedEntireCount = (1).toString()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("error", error.message)
+            }
+        })
+
+        countRefMyHistory.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()){
+                    myList.clear()
+                    for(obj in snapshot.children){
+                        val items = snapshot.getValue(ImageModel::class.java)
+                        if (items != null) {
+                            myList.add(items)
+                        }
+                    }
+                    myHistoryCount = myList.size.toString()
+                    convertedMyCount = (myHistoryCount.toInt() + 1).toString()
+                }else{
+                    convertedMyCount = (1).toString()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("error", error.message)
+            }
+        })
 
         val myRef = firebaseDatabase.child("Doctor").child(auth)
         myRef.get().addOnSuccessListener {
@@ -719,13 +785,14 @@ class DoctorHome : Fragment() {
                     val detailImageData : DetailImageModel = DetailImageModel(img.toString(), currentDate, currentTime, name, clinic)
                     firebaseDatabase.child("Users")
                         .child(listUserId)
-                        .child("Medical_Records").child(id).child(CD)
+                        .child("Medical_Records").child(id).child(convertedMyCount)
                         .setValue(imageData).addOnSuccessListener {
                             firebaseDatabase.child("Users")
-                                .child(listUserId).child("Medical_Records").child("Entire_Records").child(CD)
+                                .child(listUserId).child("Medical_Records").child("Entire_Records").child(convertedEntireCount)
                                 .setValue(detailImageData).addOnSuccessListener {
                                     progressDialog.dismiss()
                                     Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_LONG).show()
+                                    getToken()
                                 }.addOnFailureListener { exc ->
                                     progressDialog.dismiss()
                                     Toast.makeText(context, exc.message, Toast.LENGTH_LONG).show()
@@ -741,6 +808,108 @@ class DoctorHome : Fragment() {
         }
     }
  }
+
+    private fun getToken() {
+        val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").
+        getReference("AppUsers").child("Users")
+            .child(listUserId).child("Token")
+
+        val list : ArrayList<Token> = arrayListOf()
+        val friends: MutableList<String?> = ArrayList()
+        val ref = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").
+        child("Users").child(listUserId).child("Token")
+
+        val eventListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                friends.clear()
+                if(dataSnapshot.exists()){
+                    for (ds in dataSnapshot.children) {
+                        val friend : String = ds.child("token").value.toString()
+                        friends.add(friend)
+                    }
+                }else{
+                    return
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(context, databaseError.message, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        ref.addListenerForSingleValueEvent(eventListener)
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    list.clear()
+                    for (obj in snapshot.children){
+                        val token : Token? = obj.getValue(Token::class.java)
+                        if(token != null){
+                            list.add(token)
+                        }else{
+                            return
+                        }
+                    }
+
+                    val to = JSONObject()
+                    val data = JSONObject()
+
+                    data.put("hisId", listUserId)
+                    data.put("title", passedName)
+                    data.put("message", "Uploaded your prescription.")
+
+                    to.put("data", data)
+                    for (tokens in friends){
+                        to.put("to", tokens)
+                        println(tokens)
+                        sendNotification(to)
+                    }
+                }else{
+                    return
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, error.message, Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun sendNotification(to: JSONObject) {
+        val request: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            AppConstants.NOTIFICATION_URL,
+            to,
+            Response.Listener { response: JSONObject ->
+
+                Log.d("TAG", "onResponse: $response")
+            },
+            Response.ErrorListener {
+
+                Log.d("TAG", "onError: $it")
+            }) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val map: MutableMap<String, String> = HashMap()
+
+                map["Authorization"] = "key=" + AppConstants.SERVER_KEY
+                map["Content-type"] = "application/json"
+                return map
+            }
+
+            override fun getBodyContentType(): String {
+                return "application/json"
+            }
+        }
+
+        val requestQueue = Volley.newRequestQueue(context)
+        request.retryPolicy = DefaultRetryPolicy(
+            30000,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        )
+        requestQueue.add(request)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

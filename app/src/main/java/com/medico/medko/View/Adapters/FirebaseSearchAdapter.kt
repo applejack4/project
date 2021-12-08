@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.Doctor
 import com.medico.medko.R
 import com.medico.medko.View.Activities.Booking
@@ -31,6 +32,10 @@ class FirebaseSearchAdapter : RecyclerView.Adapter<FirebaseSearchAdapter.MyViewH
         holder.doctorName.text = doctor.DoctorName
         activity.let {  }
         Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.into(holder.image)
+        fragment.context?.let {
+            Glide.with(it).asBitmap().load(doctor.profilePicture).fitCenter()
+                .placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        }
 
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, Booking::class.java)

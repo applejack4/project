@@ -13,6 +13,7 @@ import com.medico.medko.View.Adapters.EntireRecordAdapter
 import com.medico.medko.View.Adapters.MyRecordAdapter
 import com.medico.medko.databinding.FragmentEntireBinding
 import com.medico.medko.viewModel.MyRecordViewModel
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 

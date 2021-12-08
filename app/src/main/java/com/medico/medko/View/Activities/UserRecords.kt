@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.medico.medko.R
 import com.medico.medko.View.Adapters.MyRecordAdapter
 import com.medico.medko.databinding.ActivityUserRecordsBinding
@@ -66,8 +67,8 @@ class UserRecords : AppCompatActivity() {
         }
 
         _binding.DoctorNameDetail.text = name
-        Picasso.get().load(profilePic)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(_binding.DoctorImageDetail)
-
+        Glide.with(this).asBitmap().load(profilePic).fitCenter()
+            .placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.DoctorImageDetail)
         val id : String = intent.getStringExtra("id").toString()
         val model : MyRecordViewModel by viewModels()
         val adapter = MyRecordAdapter()
@@ -76,7 +77,6 @@ class UserRecords : AppCompatActivity() {
                 history ->
             kotlin.run {
                 history.let {
-                    _binding.RecV.adapter = adapter
                     when(it){
                         it ->{
                             if(it.isNotEmpty() || it.size > 0){
@@ -93,6 +93,7 @@ class UserRecords : AppCompatActivity() {
                     }
             }
 
+                _binding.RecV.adapter = adapter
                 val layoutManager : LinearLayoutManager = LinearLayoutManager(this)
                 layoutManager.reverseLayout = true
                 layoutManager.stackFromEnd = true
@@ -101,7 +102,6 @@ class UserRecords : AppCompatActivity() {
                 _binding.RecV.adapter = adapter
                 _binding.RecV.setHasFixedSize(true)
                 _binding.RecV.layoutManager = layoutManager
-
 
             }
         })

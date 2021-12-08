@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.medico.medko.Model.Doctor
 import com.medico.medko.R
 import com.medico.medko.View.Activities.UserRecords
@@ -35,7 +36,10 @@ class UserRecordsAdapter : RecyclerView.Adapter<UserRecordsAdapter.MyViewHolder>
         val doctor : Doctor = list[position]
         holder.hospitalName.text= doctor.ClinicName
         holder.doctorName.text = doctor.DoctorName
-        Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.rotate(90F)?.placeholder(R.drawable.ic_baseline_account_circle_24)?.into(holder.image)
+        activity.applicationContext?.let {
+            Glide.with(it).asBitmap().load(doctor.profilePicture).fitCenter()
+                .placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)
+        }
 
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, UserRecords::class.java)
