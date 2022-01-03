@@ -39,6 +39,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:textColor="@color/black"
             android:id="@+id/Booking_clinic_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,6 +53,7 @@
 
         <TextView
             android:id="@+id/Booking_speciality"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -68,7 +70,7 @@
             android:text="Todays Status"
             app:layout_constraintTop_toBottomOf="@id/Booking_speciality"
             android:gravity="center"
-            android:textSize="@dimen/_15sdp"
+            android:textSize="@dimen/_12sdp"
             android:textColor="@color/black"
             />
 
@@ -77,6 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="@color/black"
             android:layout_marginStart="@dimen/_20sdp"
             android:layout_marginEnd="@dimen/_20sdp"
             app:layout_constraintRight_toRightOf="parent"
@@ -138,7 +141,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_165sdp"
+        android:layout_marginTop="@dimen/_160sdp"
         app:layout_constraintTop_toBottomOf="@id/constraint11">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -157,6 +160,8 @@
             app:layout_constraintBottom_toTopOf="@+id/Navigation"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginBottom="@dimen/_47sdp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

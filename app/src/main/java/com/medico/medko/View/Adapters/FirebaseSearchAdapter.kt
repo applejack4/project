@@ -30,8 +30,6 @@ class FirebaseSearchAdapter : RecyclerView.Adapter<FirebaseSearchAdapter.MyViewH
         val doctor : Doctor = list[position]
         holder.hospitalName.text= doctor.ClinicName
         holder.doctorName.text = doctor.DoctorName
-        activity.let {  }
-        Picasso.get().load(doctor.profilePicture)?.fit()?.centerInside()?.into(holder.image)
         fragment.context?.let {
             Glide.with(it).asBitmap().load(doctor.profilePicture).fitCenter()
                 .placeholder(R.drawable.ic_baseline_account_circle_24).into(holder.image)

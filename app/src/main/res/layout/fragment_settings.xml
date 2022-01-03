@@ -74,6 +74,7 @@
             android:layout_marginStart="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:text="Name "
+            android:textColor="@color/black"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/Profile" />
@@ -86,6 +87,10 @@
             android:layout_marginStart="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:text="User Name"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintStart_toEndOf="@id/Name_TAG"
             app:layout_constraintTop_toBottomOf="@id/Profile" />
@@ -109,6 +114,7 @@
             android:layout_marginStart="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:text="Mobile"
+            android:textColor="@color/black"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/Name_TAG" />
@@ -121,6 +127,10 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:inputType="number"
             android:text="999999999"
+            android:singleLine="true"
+            android:lines="1"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintStart_toEndOf="@id/Mobile_TAG"
             app:layout_constraintTop_toBottomOf="@id/User_permanent_name"

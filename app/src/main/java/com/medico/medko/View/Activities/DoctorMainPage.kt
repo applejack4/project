@@ -16,14 +16,29 @@ class DoctorMainPage : AppCompatActivity() {
     private val doctorReview = DoctorReview()
     private val doctorProfile = DoctorProfile()
     private lateinit var _binding : ActivityDoctorMainPageBinding
+    private lateinit var receivedIntent : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityDoctorMainPageBinding.inflate(layoutInflater)
         setContentView(_binding.root)
-        changeFragment(doctorHome)
+    }
 
-        _binding.BottomNavigationDoctor.setOnNavigationItemSelectedListener{
+    override fun onResume() {
+        super.onResume()
+        receivedIntent  = intent.getStringExtra("main").toString()
+        when(receivedIntent){
+            "FromSplashNotNull" ->{
+                changeFragment(doctorHome)
+            }
+
+            "FromNotificationReview" ->{
+                changeFragment(doctorReview)
+            }
+        }
+
+
+        _binding.BottomNavigationDoctor.setOnItemSelectedListener{
             when(it.itemId){
                 R.id.Appointment_home -> changeFragment(doctorHome)
                 R.id.Review_doc -> changeFragment(doctorReview)
@@ -32,8 +47,6 @@ class DoctorMainPage : AppCompatActivity() {
             }
             true
         }
-
-
     }
 
     private fun changeFragment(fragment : Fragment){

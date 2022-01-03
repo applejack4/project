@@ -25,6 +25,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.medico.medko.Model.Token
 import com.medico.medko.View.Activities.UserRecords
+import com.medico.medko.View.Fragments.DoctorReview
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,6 +48,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val title = map["title"]
             val message = map["message"]
             val hisId = map["hisId"]
+            val image = map["Image"]
+            val mobile = map["mobile"]
 
             when(message.toString()){
                 AppConstants.BOOKED_APPOINTMENT ->{
@@ -65,32 +68,33 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
                 AppConstants.PRESCRIPTION ->{
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
-                        println("Current version is greater than Android Oreo${Build.VERSION.SDK_INT.toString()}")
-                        createRecordOreoNotification(title.toString(), message!!, hisId!!)
+                        createRecordOreoNotification(title.toString(), message!!, hisId!!, image!!, mobile!!)
                     } else {
-                        println("Current version is Lower than Android Oreo${Build.VERSION.SDK_INT.toString()}")
-                        createRecordNormalNotification(title.toString(), message!!, hisId!!)
+                        createRecordNormalNotification(title.toString(), message!!, hisId!!, image!!, mobile!!)
                     }
                 }
             }
         }
     }
 
-    private fun createRecordNormalNotification(title: String, message: String, hisId: String) {
+    private fun createRecordNormalNotification(title: String, message: String, hisId: String, image : String, mobile: String) {
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val builder = NotificationCompat.Builder(this, AppConstants.CHANNEL_ID)
         builder.setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setSound(uri)
 
         val intent = Intent(this, UserRecords::class.java)
 
-        intent.putExtra("hisId", hisId)
+        intent.putExtra("id", hisId)
+        intent.putExtra("Doctor_name", title)
+        intent.putExtra("profilePic", image)
+        intent.putExtra("mobile", mobile)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -99,7 +103,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         manager.notify(Random().nextInt(85 - 65), builder.build())
     }
 
-    private fun createRecordOreoNotification(title : String, message: String, hisId: String) {
+    private fun createRecordOreoNotification(title : String, message: String, hisId: String, image : String, mobile : String) {
         val channel = NotificationChannel(
             AppConstants.CHANNEL_ID,
             "Message",
@@ -116,7 +120,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val intent = Intent(this, UserRecords::class.java)
 
-        intent.putExtra("hisId", hisId)
+        intent.putExtra("id", hisId)
+        intent.putExtra("Doctor_name", title)
+        intent.putExtra("profilePic", image)
+        intent.putExtra("mobile", mobile)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -124,7 +131,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setContentIntent(pendingIntent)
@@ -140,7 +147,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         builder.setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setSound(uri)
@@ -148,6 +155,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, DoctorMainPage::class.java)
 
         intent.putExtra("hisId", hisId)
+        intent.putExtra("main", "FromNotificationReview")
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -174,6 +182,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, DoctorMainPage::class.java)
 
         intent.putExtra("hisId", hisId)
+        intent.putExtra("main", "FromNotificationReview")
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -181,7 +190,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setContentIntent(pendingIntent)
@@ -238,7 +247,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         builder.setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setSound(uri)
@@ -287,7 +296,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notification = Notification.Builder(this, AppConstants.CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.check)
+            .setSmallIcon(R.drawable.notification)
             .setAutoCancel(true)
             .setColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, null))
             .setContentIntent(pendingIntent)

@@ -40,8 +40,7 @@ class ReviewAdapter(private val fragment: Fragment) : RecyclerView.Adapter<Revie
 
         holder.itemView.setOnClickListener {
             if(fragment is DoctorReview){
-//                review.id?.let { it1 -> fragment.deleteReview(list, holder.adapterPosition, it1, review.name.toString()) }
-                fragment.deleteReview(list, holder.adapterPosition, review.id.toString(), review.name.toString())
+                fragment.deleteReview(list, holder.adapterPosition, review.id.toString(), review.name.toString(), review.time.toString())
             }
         }
 

@@ -4,7 +4,7 @@
     <item android:state_checked="false">
         <shape android:shape="oval">
             <solid android:color="#FFFF"/>
-                <size android:width="@dimen/_18sdp" android:height="@dimen/_18sdp"/>
+                <size android:width="@dimen/_20sdp" android:height="@dimen/_20sdp"/>
                 <stroke android:width="@dimen/_1sdp" android:color="@color/red"/>
         </shape>
     </item>
@@ -12,7 +12,7 @@
     <item android:state_checked="true">
         <shape android:shape="oval">
             <solid android:color="#FFFF"/>
-            <size android:width="@dimen/_30sdp" android:height="@dimen/_30sdp"/>
+            <size android:width="@dimen/_20sdp" android:height="@dimen/_20sdp"/>
             <stroke android:width="@dimen/_1sdp" android:color="#34c759"/>
         </shape>
     </item>

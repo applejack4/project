@@ -25,15 +25,10 @@ class Review_fragment : Fragment() {
     private lateinit var auth : FirebaseAuth
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentDoctorReviewBinding.inflate(layoutInflater, container, false)
         return _binding!!.root
@@ -48,9 +43,8 @@ class Review_fragment : Fragment() {
         super.onResume()
         val model : ReviewViewModel by viewModels()
         val id : String = activity?.intent?.extras?.getString("id_firebase").toString()
-
         val adapter = ReviewAdapter(this)
-        _binding?.RecV?.layoutManager = LinearLayoutManager(activity)
+
 
         model.bookingReview(id).observe(viewLifecycleOwner, {
             review ->
@@ -72,6 +66,14 @@ class Review_fragment : Fragment() {
                             }
                         }
                     }
+
+                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                layoutManager.reverseLayout = true
+                layoutManager.stackFromEnd = true
+
+                _binding?.RecV?.adapter = adapter
+                _binding?.RecV?.setHasFixedSize(true)
+                _binding?.RecV?.layoutManager = layoutManager
             }
         })
     }

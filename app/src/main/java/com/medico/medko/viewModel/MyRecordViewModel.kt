@@ -2,6 +2,7 @@ package com.medico.medko.viewModel
 
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -55,6 +56,24 @@ class MyRecordViewModel : ViewModel() {
                     Log.i("Error", error.message)
                 }
             })
+        }
+    }
+
+
+    private val qrCode : MutableLiveData<String> by lazy {
+        MutableLiveData<String>().also {
+            userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+            val myRef = firebaseDatabase.child("Doctor").child(userId)
+            myRef.get().addOnSuccessListener {
+                if(it.exists()){
+                    qrCode.value = it.child("qrCode").value.toString()
+                    println("This is qr Value ${qrCode.value}")
+                }else{
+                    qrCode.value = "null"
+                }
+            }.addOnFailureListener {
+                qrCode.value = "null"
+            }
         }
     }
 
@@ -216,5 +235,7 @@ class MyRecordViewModel : ViewModel() {
         return userRecord
     }
 
-
+    fun qrCode() : LiveData<String>{
+        return qrCode
+    }
 }

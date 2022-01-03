@@ -26,7 +26,7 @@ class MainUserPage : AppCompatActivity() {
         changeFragment(homeFragment)
 
 
-        binding.BottomNavigation.setOnNavigationItemSelectedListener{
+        binding.BottomNavigation.setOnItemSelectedListener{
             when(it.itemId){
                 R.id.Home -> changeFragment(homeFragment)
                 R.id.Search -> changeFragment(searchFragment)

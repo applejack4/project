@@ -28,6 +28,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:textColor="@color/black"
         android:id="@+id/noAppsOffline"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -82,6 +83,7 @@
 
         <TextView
             android:id="@+id/tv_doctor_clinicName"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -133,19 +135,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/Constttt"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_50sdp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_below"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:visibility="gone">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_marginStart="@dimen/_7sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -153,20 +142,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="@dimen/_7sdp"
-        app:layout_constraintTop_toBottomOf="@id/Constttt">
+        app:layout_constraintTop_toBottomOf="@id/ll_below">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                tools:listitem="@layout/user_appointment_layout"/>
+                android:layout_marginBottom="@dimen/_85sdp"
+                tools:listitem="@layout/user_appointment_layout" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

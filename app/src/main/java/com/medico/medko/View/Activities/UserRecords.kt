@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.firebase.database.*
 import com.medico.medko.R
 import com.medico.medko.View.Adapters.MyRecordAdapter
 import com.medico.medko.databinding.ActivityUserRecordsBinding
@@ -29,10 +30,28 @@ import com.squareup.picasso.Picasso
 class UserRecords : AppCompatActivity() {
 
     private lateinit var _binding : ActivityUserRecordsBinding
+    private lateinit var profilePicture : String
+    private lateinit var name : String
+    private lateinit var mobile : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityUserRecordsBinding.inflate(layoutInflater)
         setContentView(_binding.root)
+
+        val id : String = intent.getStringExtra("id").toString()
+
+        val checkRef = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/")
+            .getReference("AppUsers").child("Doctor")
+
+        checkRef.child(id).get().addOnSuccessListener {
+            if(it.exists()){
+                println("Snapshot does exist")
+                profilePicture = it.child("profilePicture").value.toString()
+                name = it.child("doctorName").value.toString()
+
+            }
+        }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -41,7 +60,11 @@ class UserRecords : AppCompatActivity() {
 
         val profilePic : String = intent.getStringExtra("profilePic").toString()
         val name : String = intent.getStringExtra("Doctor_name").toString()
-        val mobile : String = intent.getStringExtra("mobile").toString()
+        mobile = intent.getStringExtra("mobile").toString()
+
+        _binding.DoctorNameDetail.text = name
+            Glide.with(this).asBitmap().load(profilePic).fitCenter()
+                .placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.DoctorImageDetail)
 
         _binding.CallDoctorDetail.setOnClickListener {
             Dexter.withContext(this)
@@ -67,6 +90,7 @@ class UserRecords : AppCompatActivity() {
         }
 
         _binding.DoctorNameDetail.text = name
+
         Glide.with(this).asBitmap().load(profilePic).fitCenter()
             .placeholder(R.drawable.ic_baseline_account_circle_24).into(_binding.DoctorImageDetail)
         val id : String = intent.getStringExtra("id").toString()

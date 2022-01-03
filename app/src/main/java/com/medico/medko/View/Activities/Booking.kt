@@ -54,6 +54,7 @@ class Booking : AppCompatActivity() {
     private lateinit var cancelledDialog : Dialog
     private lateinit var _binding : ActivityBookingBinding
     private lateinit var hisId : String
+    private lateinit var formattedDate : String
 
     private var name : String ?= null
     private var image : String ?= null
@@ -91,7 +92,7 @@ class Booking : AppCompatActivity() {
         cancelledDialog = Dialog(this@Booking)
         cancelledDialog.setContentView(R.layout.offlinedialog)
 
-        _binding.Navigation.setOnNavigationItemSelectedListener {
+        _binding.Navigation.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.Menu_QRcode -> changeFragment(qrCode)
                 R.id.Menu_Review -> changeFragment(review)
@@ -144,9 +145,11 @@ class Booking : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val tf = SimpleDateFormat("hh:mm:ss")
-        val currentTime = tf.format(Date())
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
         val doctorUserid = intent.getStringExtra("id_firebase").toString()
+
+        val dateFormat = SimpleDateFormat("dd-MMM-yy || hh : mm : ss : S  aa")
+        formattedDate = dateFormat.format(Date()).toString()
 
         _binding.BookAppointment.setOnClickListener {
             firebaseDatabase.child("Doctor").child(doctorUserid).get().addOnSuccessListener {
@@ -160,7 +163,6 @@ class Booking : AppCompatActivity() {
                                     when(snapshot){
                                         snapshot ->{
                                             if(snapshot.exists()){
-                                                println("Yes it Exists.")
                                                 pendingdialog.show()
                                             }
                                             if(!snapshot.exists()){
@@ -172,8 +174,8 @@ class Booking : AppCompatActivity() {
                                                             val phone = value.child("mobile").value.toString()
                                                             val id = value.child("id").value.toString()
                                                             val profilePic = value.child("profilePicture").value.toString()
-                                                            val appointment  = AppointConstructor(id, name, phone, profilePic, currentTime)
-                                                            firebaseDatabase.child("Doctor").child(doctorUserid).child("Online_Appointment").child(currentUserId).
+                                                            val appointment  = AppointConstructor(id, name, phone, profilePic, formattedDate)
+                                                            firebaseDatabase.child("Doctor").child(doctorUserid).child("Online_Appointment").child(formattedDate).
                                                             setValue(appointment).addOnCompleteListener {
                                                                     task ->
                                                                 run {
@@ -181,6 +183,7 @@ class Booking : AppCompatActivity() {
                                                                         saveToUsersVisitedDoctors(currentUserId, doctorUserid)
                                                                         dialog.show()
                                                                         getToken()
+                                                                        onResume()
                                                                     }
                                                                 }
                                                             }
@@ -206,11 +209,9 @@ class Booking : AppCompatActivity() {
                                     when(snapshot){
                                         snapshot ->{
                                             if(snapshot.exists()){
-                                                println("Yes it Exists.")
                                                 pendingdialog.show()
                                             }
                                             if(!snapshot.exists()){
-                                                println("No it Doesn't Exist.")
                                                 firebaseDatabase.child("Users").child(currentUserId).get().addOnSuccessListener {
                                     value ->
                                 run {
@@ -219,8 +220,8 @@ class Booking : AppCompatActivity() {
                                         val phone = value.child("mobile").value.toString()
                                         val id = value.child("id").value.toString()
                                         val profilePic = value.child("profilePicture").value.toString()
-                                        val appointment = AppointConstructor(id, name, phone, profilePic, currentTime)
-                                        firebaseDatabase.child("Doctor").child(doctorUserid).child("Offline_Appointment").child(currentUserId).
+                                        val appointment = AppointConstructor(id, name, phone, profilePic, formattedDate)
+                                        firebaseDatabase.child("Doctor").child(doctorUserid).child("Offline_Appointment").child(formattedDate).
                                         setValue(appointment).addOnCompleteListener {
                                                 task ->
                                             run {
@@ -228,6 +229,7 @@ class Booking : AppCompatActivity() {
                                                     saveToUsersVisitedDoctors(currentUserId, doctorUserid)
                                                     cancelledDialog.show()
                                                     getToken()
+                                                    onResume()
                                                 }
                                             }
                                         }
@@ -245,6 +247,8 @@ class Booking : AppCompatActivity() {
                             })
                         }
                     }
+                }else{
+                    return@addOnSuccessListener
                 }
             }
         }
@@ -272,13 +276,14 @@ class Booking : AppCompatActivity() {
                                         val name: String = it.child("firstname").value.toString()
                                         val id: String = it.child("id").value.toString()
                                         val image : String = it.child("profilePicture").value.toString()
-                                        val reviewMode = ReviewMode(name, result, image, id)
+                                        val reviewMode = ReviewMode(name, result, image, id, formattedDate)
                                         reference.child("Doctor").child(doctorUserid)
-                                            .child("Review").child(id).setValue(reviewMode)
+                                            .child("Review").child(formattedDate).setValue(reviewMode)
                                             .addOnSuccessListener {
                                                 dialog.dismiss()
                                                 Toast.makeText(context, "Your review has been Updated successfully.", Toast.LENGTH_LONG).show()
                                                 getTokenToSendReview()
+                                                onResume()
                                             }
                                     }
                                 }
@@ -325,7 +330,7 @@ class Booking : AppCompatActivity() {
             .child(hisId).child("Token")
 
         val list : ArrayList<Token> = arrayListOf()
-        val friends: MutableList<String?> = ArrayList()
+        val friends : MutableList<String?> = ArrayList()
         val ref = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").
         child("Doctor").child(hisId.toString()).child("Token")
 
@@ -372,7 +377,6 @@ class Booking : AppCompatActivity() {
                     to.put("data", data)
                     for (tokens in friends){
                         to.put("to", tokens)
-                        println(tokens)
                         sendNotification(to)
                     }
                 }else{
@@ -389,12 +393,12 @@ class Booking : AppCompatActivity() {
     private fun getTokenToSendReview(){
         val databaseReference = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").
         getReference("AppUsers").child("Doctor")
-            .child(hisId!!).child("Token")
+            .child(hisId).child("Token")
 
         val list : ArrayList<Token> = arrayListOf()
         val friends: MutableList<String?> = ArrayList()
         val ref = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers").
-        child("Doctor").child(hisId.toString()).child("Token")
+        child("Doctor").child(hisId).child("Token")
 
         val eventListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

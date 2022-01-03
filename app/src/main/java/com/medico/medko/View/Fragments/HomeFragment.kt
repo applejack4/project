@@ -250,7 +250,7 @@ class HomeFragment : Fragment() {
 
         _binding!!.Other.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, SpecificDoctorList::class.java)
-            intent.putExtra("item", "Cardiothoraric Surgeon")
+            intent.putExtra("item", "Other")
             startActivity(intent)
         })
     }

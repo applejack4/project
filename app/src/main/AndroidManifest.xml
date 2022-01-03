@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.medico.medko">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -11,7 +12,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <queries>
-
         <!-- List of apps which you want to support for Intent pay -->
         <package android:name="com.google.android.apps.nbu.paisa.user" />
         <package android:name="com.phonepe.app" />
@@ -32,12 +32,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".View.Activities.PaymentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".View.Activities.Payment"
-            android:exported="false" />
+
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
@@ -65,7 +60,7 @@
             android:theme="@style/Theme.Project.NoActionBar" />
         <activity
             android:name=".View.Activities.UserRecords"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Project.NoActionBar" />
         <activity
@@ -80,7 +75,8 @@
             android:theme="@style/Theme.Project.NoActionBar" />
         <activity
             android:name=".View.Activities.DoctorMainPage"
-            android:exported="false"
+            android:launchMode="singleInstancePerTask"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Project.NoActionBar" />
         <activity

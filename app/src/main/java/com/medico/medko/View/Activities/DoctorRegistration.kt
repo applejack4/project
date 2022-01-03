@@ -35,7 +35,6 @@ class DoctorRegistration : AppCompatActivity() {
         progress.setMessage("Registering")
         progress.setCancelable(false)
 
-
         binding = ActivityDoctorRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
@@ -95,7 +94,7 @@ class DoctorRegistration : AppCompatActivity() {
                                 if (task.isSuccessful) {
                                     progress.show()
                                     val id = auth.currentUser!!.uid
-                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password,"null",  "0", "Available", "GooglePay@ybl", "PhonePay@okaxis", "Paytm@okok", "100")
+                                    val doctor = Doctor(id, fullName, clinicName, email, mobile, speciality, password,"null",  "0", "Available", "null")
                                     val all_Users = AllUsers(id, "1")
                                     fields.child(speciality).child(id).setValue(doctor)
                                     appUsers.child(id).setValue(doctor).addOnCompleteListener {

@@ -51,6 +51,13 @@ class DoctorReview : Fragment() {
             run {
                 reviews.let {
                     _binding.RecView.adapter = adapter
+
+                    val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
+                    layoutManager.reverseLayout = true
+                    layoutManager.stackFromEnd = true
+
+                    _binding.RecView.setHasFixedSize(true)
+                    _binding.RecView.layoutManager = layoutManager
                     when(it){
                         it ->{
                             if(it.isNotEmpty() || it.size > 0){
@@ -66,25 +73,17 @@ class DoctorReview : Fragment() {
                         }
                     }
                 }
-
-                val layoutManager : LinearLayoutManager = LinearLayoutManager(context)
-                layoutManager.reverseLayout = true
-                layoutManager.stackFromEnd = true
-
-                _binding.RecView.adapter = adapter
-                _binding.RecView.setHasFixedSize(true)
-                _binding.RecView.layoutManager = layoutManager
             }
         })
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun deleteReview(list : ArrayList<ReviewMode>, position : Int, id : String, name : String){
+    fun deleteReview(list : ArrayList<ReviewMode>, position : Int, id : String, name : String, time : String){
 
         val currentUser : String = auth.currentUser?.uid.toString()
         val dialog = AlertDialog.Builder(context)
         dialog.setTitle("Delete Review.")
-        dialog.setMessage("Are you sure you want to remove $name Review?")
+        dialog.setMessage("Are you sure you want to remove $name's Review?")
         dialog.setCancelable(true)
 
         val adapter = ReviewAdapter(this)
@@ -95,7 +94,7 @@ class DoctorReview : Fragment() {
             dialogInterface.dismiss()
         }).setPositiveButton("Yes", DialogInterface.OnClickListener{ dialogInterface, i ->
             model.deleteReview(position)
-            val myRef = firebaseDatabase.child("Doctor").child(currentUser).child("Review").child(id).removeValue()
+            val myRef = firebaseDatabase.child("Doctor").child(currentUser).child("Review").child(time).removeValue()
             myRef.addOnSuccessListener {
                 adapter.reviewList(list)
                 adapter.notifyItemRemoved(position)

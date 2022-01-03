@@ -3,14 +3,11 @@ package com.medico.medko.View.Fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -28,7 +25,6 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.medico.medko.Model.Doctor
 import com.medico.medko.View.Activities.ChangePassword
-import com.medico.medko.databinding.FragmentDoctorProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
@@ -49,6 +45,7 @@ import kotlin.collections.ArrayList
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
+import com.medico.medko.databinding.FragmentDoctorProfileBinding
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.ByteArrayOutputStream
@@ -131,7 +128,6 @@ class DoctorProfile : Fragment() {
 
         auth = FirebaseAuth.getInstance()
         currentId = auth.currentUser?.uid.toString()
-        println("Current is is ${currentId}")
         firebaseDatabase =  FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com/").getReference("AppUsers")
         firebaseDatabase.child("Doctor").child(userid).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -141,10 +137,6 @@ class DoctorProfile : Fragment() {
                         _binding.DoctorPermanentClinicName.text = details.ClinicName
                         _binding.DoctorPermanentStatus.text = details.hospitalStatus
                         _binding.DoctorPermanentMobile.text = details.mobile
-                        _binding.DoctorPermanentAdvanceFee.text = details.bookingAmount
-                        _binding.DoctorPermanentGpayId.text = details.gPay
-                        _binding.DoctorPermanentPhonePayId.text = details.pPay
-                        _binding.DoctorPermanentPaytmId.text = details.Paytm
                         context?.let { Glide.with(it).asBitmap().load(details.profilePicture).centerCrop().into(_binding.ImageProfile) }
 
                         profession = details.Speciality.toString()
@@ -160,10 +152,6 @@ class DoctorProfile : Fragment() {
             val name : String = _binding.DoctorPermanentName.text.toString()
             val mobile : String = _binding.DoctorPermanentMobile.text.toString()
             val clinic : String = _binding.DoctorPermanentClinicName.text.toString()
-            val gPay : String = _binding.DoctorPermanentGpayId.text.toString()
-            val pPay : String = _binding.DoctorPermanentPhonePayId.text.toString()
-            val payTm : String = _binding.DoctorPermanentPaytmId.text.toString()
-            val advFee : String = _binding.DoctorPermanentAdvanceFee.text.toString()
 
             //button settings
             _binding.ButtonSaveChanges.visibility = View.VISIBLE
@@ -182,30 +170,13 @@ class DoctorProfile : Fragment() {
             _binding.DoctorPermanentClinicName.visibility = View.GONE
             _binding.ChangeDoctorClinic.visibility = View.VISIBLE
 
-            //GPay
-            _binding.DoctorPermanentGpayId.visibility = View.GONE
-            _binding.ChangeDoctorGpayid.visibility = View.VISIBLE
 
-            //PhonePay
-            _binding.DoctorPermanentPhonePayId.visibility = View.GONE
-            _binding.ChangeDoctorPhonePayId.visibility = View.VISIBLE
 
-            //Paytm
-            _binding.DoctorPermanentPaytmId.visibility = View.GONE
-            _binding.ChangeDoctorPaytmId.visibility = View.VISIBLE
-
-            //AdvFee
-            _binding.DoctorPermanentAdvanceFee.visibility = View.GONE
-            _binding.ChangeDoctorAdvanceFee.visibility = View.VISIBLE
 
 
             _binding.ChangeDoctorClinic.setText(clinic)
             _binding.ChangeDoctorMobile.setText(mobile)
             _binding.ChangeDoctorName.setText(name)
-            _binding.ChangeDoctorPhonePayId.setText(pPay)
-            _binding.ChangeDoctorPaytmId.setText(payTm)
-            _binding.ChangeDoctorGpayid.setText(gPay)
-            _binding.ChangeDoctorAdvanceFee.setText(advFee)
         }
 
         _binding.ButtonSaveChanges.setOnClickListener {
@@ -219,18 +190,7 @@ class DoctorProfile : Fragment() {
                 TextUtils.isEmpty(_binding.ChangeDoctorClinic.text.trim()) ->{
                     Toast.makeText(context, "Clinic Cannot be empty", Toast.LENGTH_LONG).show()
                 }
-                TextUtils.isEmpty(_binding.ChangeDoctorGpayid.text.trim()) ->{
-                    Toast.makeText(context, "Gpayid cannot be empty", Toast.LENGTH_LONG).show()
-                }
-                TextUtils.isEmpty(_binding.ChangeDoctorPhonePayId.text.trim()) ->{
-                    Toast.makeText(context, "Phonepay id cannot be empty", Toast.LENGTH_LONG).show()
-                }
-                TextUtils.isEmpty(_binding.ChangeDoctorPaytmId.text.trim()) ->{
-                    Toast.makeText(context, "Paytm id cannot be empty", Toast.LENGTH_LONG).show()
-                }
-                TextUtils.isEmpty(_binding.ChangeDoctorAdvanceFee.text.trim()) ->{
-                    Toast.makeText(context, "Advance Fee cannot be Empty", Toast.LENGTH_LONG).show()
-                }
+
 
                 else ->{
                 if(_binding.ChangeDoctorName.text.isNotEmpty() && _binding.ChangeDoctorMobile.text.isNotEmpty() && _binding.ChangeDoctorClinic.text.isNotEmpty()){
@@ -239,18 +199,10 @@ class DoctorProfile : Fragment() {
                     val nameUpdate : String = _binding.ChangeDoctorName.text.toString()
                     val mobileUpdate : String = _binding.ChangeDoctorMobile.text.toString()
                     val clinicUpdate : String = _binding.ChangeDoctorClinic.text.toString()
-                    val gPay : String = _binding.ChangeDoctorGpayid.text.toString()
-                    val pPay : String = _binding.ChangeDoctorPhonePayId.text.toString()
-                    val payTM : String = _binding.ChangeDoctorPaytmId.text.toString()
-                    val advFee : String = _binding.ChangeDoctorAdvanceFee.text.toString()
 
                     firebaseDatabase.child("Doctor").child(userid).child("doctorName").setValue(nameUpdate)
                     firebaseDatabase.child("Doctor").child(userid).child("mobile").setValue(mobileUpdate)
                     firebaseDatabase.child("Doctor").child(userid).child("clinicName").setValue(clinicUpdate)
-                    firebaseDatabase.child("Doctor").child(userid).child("gPay").setValue(gPay)
-                    firebaseDatabase.child("Doctor").child(userid).child("pPay").setValue(pPay)
-                    firebaseDatabase.child("Doctor").child(userid).child("paytm").setValue(payTM)
-                    firebaseDatabase.child("Doctor").child(userid).child("bookingAmount").setValue(advFee)
                     editTextMethod()
                     onResume()
                 }
@@ -363,7 +315,44 @@ class DoctorProfile : Fragment() {
 
         }
 
+        _binding.QrCode.setOnClickListener {
+            Dexter.withContext(context)
+                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(object : MultiplePermissionsListener{
+                    override fun onPermissionsChecked(report : MultiplePermissionsReport?) {
+                        if(report!!.areAllPermissionsGranted()){
+                            val imageIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                            if(context?.let { imageIntent.resolveActivity(it.packageManager) } != null){
+                                var photofile: File? = null
+                                try {
+                                    photofile = createImageFileQRCode()
+                                } catch (ex: IOException) {
+                                    // Error occurred while creating the File
+                                    Log.i("Error","Exception occurred is ${ex.message}")
+                                }
+                                if(photofile != null){
+                                    val photoURI = FileProvider.getUriForFile(context!!, "com.medico.medko.android.fileProvide",
+                                        photofile!!
+                                    )
+                                    imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                                    activityResult(imageIntent, GALLERY)
+                                }else{
+                                    return
+                                }
+                            }
+                        }else{
+                            showRationalDialogForPermission()
+                        }
+                    }
 
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: MutableList<PermissionRequest>?,
+                        p1: PermissionToken?
+                    ) {
+                        showRationalDialogForPermission()
+                    }
+                }).onSameThread().check()
+        }
 
 
     }
@@ -380,23 +369,6 @@ class DoctorProfile : Fragment() {
         //clinic Settings
         _binding.DoctorPermanentClinicName.visibility = View.VISIBLE
         _binding.ChangeDoctorClinic.visibility = View.GONE
-
-        //gPay settings
-        _binding.DoctorPermanentGpayId.visibility = View.VISIBLE
-        _binding.ChangeDoctorGpayid.visibility = View.GONE
-
-        //phonePay
-        _binding.DoctorPermanentPhonePayId.visibility = View.VISIBLE
-        _binding.ChangeDoctorPhonePayId.visibility = View.GONE
-
-        //payTm
-        _binding.DoctorPermanentPaytmId.visibility =View.VISIBLE
-        _binding.ChangeDoctorPaytmId.visibility = View.GONE
-
-        //advFee
-        _binding.DoctorPermanentAdvanceFee.visibility = View.VISIBLE
-        _binding.ChangeDoctorAdvanceFee.visibility = View.GONE
-
 
         //button
         _binding.ButtonSaveChanges.visibility  = View.GONE
@@ -428,6 +400,26 @@ class DoctorProfile : Fragment() {
         currentPhotoPath = image.absolutePath
         return image
 
+    }
+
+    private fun createImageFileQRCode() : File {
+        // Create an image file name
+
+        // Create an image file name
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "QRCODE"
+        val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val image = File.createTempFile(
+            imageFileName,  /* prefix */
+            ".jpg",  /* suffix */
+            storageDir /* directory */
+        )
+
+        // Save a file: path for use with ACTION_VIEW intents
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.absolutePath
+        return image
     }
 
     private fun showRationalDialogForPermission(){
@@ -482,10 +474,19 @@ class DoctorProfile : Fragment() {
                 if(requestCode == PROFILE){
                     if(resultCode == Activity.RESULT_OK){
                         data?.data?.let { uri ->
-                            println("Here we print the uri ->$uri")
                             launchImageCrop(uri)
                         }
                     }else if(resultCode == Activity.RESULT_CANCELED){
+                        println("result cancelled.")
+                    }
+                }
+
+                if(requestCode == GALLERY){
+                    if(resultCode == Activity.RESULT_OK){
+                        data?.data?.let {  uri ->
+                            launchQRImageCrop(uri)
+                        }
+                    }else if (resultCode == Activity.RESULT_CANCELED){
                         println("result cancelled.")
                     }
                 }
@@ -495,12 +496,22 @@ class DoctorProfile : Fragment() {
                     if(resultUri == null){
                         return
                     }else{
-                        if(Build.VERSION.SDK_INT < 29){
-                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
-                            byteArray()
+                        if(currentPhotoPath?.contains("QRCODE") == true){
+                            if(Build.VERSION.SDK_INT < 29){
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArrayQRCode()
+                            }else{
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArrayQRCode()
+                            }
                         }else{
-                            bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
-                            byteArray()
+                            if(Build.VERSION.SDK_INT < 29){
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArray()
+                            }else{
+                                bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, resultUri.uri)
+                                byteArray()
+                            }
                         }
                     }
                 }
@@ -512,7 +523,6 @@ class DoctorProfile : Fragment() {
     }
 
     private fun setImage(croppedImage : ByteArray){
-
         firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
         storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("ProfilePics")
         val storageRef = storageReference!!.child(currentId.toString())
@@ -531,12 +541,45 @@ class DoctorProfile : Fragment() {
         }
     }
 
+    private fun setImageQR(croppedImage: ByteArray){
+        firebaseDatabase = FirebaseDatabase.getInstance("https://trial-38785-default-rtdb.firebaseio.com").getReference("AppUsers")
+        storageReference = FirebaseStorage.getInstance("gs://trial-38785.appspot.com").getReference("QRCodes")
+        val storageRef = storageReference!!.child(currentId)
+        storageRef.putBytes(croppedImage).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener {
+                val qrCode : String = it.toString()
+                firebaseDatabase.child("Doctor")
+                    .child(currentId).child("qrCode").setValue(qrCode).addOnSuccessListener {
+                        Toast.makeText(context, "QRCode Uploaded Successfully", Toast.LENGTH_LONG).show()
+                    }.addOnFailureListener { exp ->
+                        Toast.makeText(context, exp.message.toString(), Toast.LENGTH_LONG).show()
+                    }
+            }
+        }
+    }
+
     private fun byteArray(){
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
         dataArray = baos.toByteArray()
-        println("This is the baos result $dataArray This Would be the imageSize. ${dataArray.size.toByte()}")
-        Toast.makeText(context, "Working shiz...", Toast.LENGTH_LONG).show()
         setImage(dataArray)
+    }
+
+    private fun byteArrayQRCode(){
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+        dataArray = baos.toByteArray()
+        setImageQR(dataArray)
+    }
+
+    private fun launchQRImageCrop(uri : Uri){
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(100, 100)
+                .setMaxCropResultSize(2000, 2000)
+                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                .start(it, this)
+        }
     }
 }

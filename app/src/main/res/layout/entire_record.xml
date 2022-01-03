@@ -60,6 +60,7 @@
 
     <TextView
         android:id="@+id/PermanentDoctorName"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -90,6 +91,7 @@
 
         <TextView
             android:id="@+id/PermanentClinicName"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/DoctorName_TAG"
@@ -117,6 +119,7 @@
 
     <TextView
         android:id="@+id/PermanentDateVisited"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/PermanentClinicName"

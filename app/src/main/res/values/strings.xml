@@ -76,7 +76,7 @@
     <string name="patientNote">Patient Note</string>
     <string name="Pay">Pay</string>
     <string name="Note">NOTE</string>
-    <string name="Inst">Please talk to doctor (or) Receptionist and make sure the slots are available before you make a payment.</string>
+    <string name="Inst">Please talk to doctor (or) Receptionist and make sure the slots are available before you make payment.</string>
     <string name="gpayExample">googlepay@example</string>
     <string name="ppayexample">PhonePay@example</string>
     <string name="paytmexample">Paytm@example</string>

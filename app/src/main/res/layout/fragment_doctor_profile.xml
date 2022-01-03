@@ -87,6 +87,11 @@
             android:layout_marginStart="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:text="Doctor Name"
+            android:lines="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:singleLine="true"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintStart_toEndOf="@id/Name_TAG"
             app:layout_constraintTop_toBottomOf="@id/Profile" />
@@ -124,6 +129,11 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:inputType="number"
             android:text="999999999"
+            android:textColor="@color/black"
+            android:ellipsize="end"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintStart_toEndOf="@id/Mobile_TAG"
             app:layout_constraintTop_toBottomOf="@id/Doctor_permanent_name"
@@ -163,6 +173,11 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:text="Clinic name"
             android:textSize="@dimen/_13sdp"
+            android:lines="1"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:ellipsize="end"
+            android:singleLine="true"
             app:layout_constraintStart_toEndOf="@id/Mobile_TAG"
             app:layout_constraintTop_toBottomOf="@id/Doctor_Permanent_Mobile"
             tools:ignore="TextViewEdits" />
@@ -181,162 +196,13 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
-            android:id="@+id/GpayId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="Gpay Id"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Clinic_TAG" />
-
-        <TextView
-            android:id="@+id/Doctor_Permanent_GpayId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_43sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="@string/gpayExample"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintStart_toEndOf="@id/GpayId"
-            app:layout_constraintTop_toBottomOf="@id/Doctor_Permanent_Clinic_name"
-            tools:ignore="TextViewEdits" />
 
 
-        <EditText
-            android:id="@+id/Change_Doctor_gpayid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_43sdp"
-            android:layout_marginTop="@dimen/_129sdp"
-            android:maxLines="1"
-            android:text="@string/gpayExample"
-            android:textSize="@dimen/_13sdp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/GpayId"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/PhonePay_TAG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="PhonePay"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/GpayId" />
-
-        <TextView
-            android:id="@+id/Doctor_Permanent_PhonePayId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="@string/ppayexample"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintStart_toEndOf="@id/PhonePay_TAG"
-            app:layout_constraintTop_toBottomOf="@id/Doctor_Permanent_GpayId"
-            tools:ignore="TextViewEdits" />
 
 
-        <EditText
-            android:id="@+id/Change_Doctor_PhonePayId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_158sdp"
-            android:maxLines="1"
-            android:text="@string/ppayexample"
-            android:textSize="@dimen/_12sdp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/PhonePay_TAG"
-            app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
-            android:id="@+id/Paytm_TAG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="Paytm"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/PhonePay_TAG" />
 
-        <TextView
-            android:id="@+id/Doctor_Permanent_PaytmId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="@string/paytmexample"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintStart_toEndOf="@id/Paytm_TAG"
-            app:layout_constraintTop_toBottomOf="@id/Doctor_Permanent_PhonePayId"
-            tools:ignore="TextViewEdits" />
-
-
-        <EditText
-            android:id="@+id/Change_Doctor_PaytmId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_190sdp"
-            android:maxLines="1"
-            android:text="@string/paytmexample"
-            android:textSize="@dimen/_12sdp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/Paytm_TAG"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <TextView
-            android:id="@+id/AdvanceFee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="Advance fee"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/Paytm_TAG" />
-
-        <TextView
-            android:id="@+id/Doctor_Permanent_AdvanceFee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_17sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:text="@string/hundo"
-            android:textSize="@dimen/_13sdp"
-            android:inputType="number"
-            app:layout_constraintStart_toEndOf="@id/AdvanceFee"
-            app:layout_constraintTop_toBottomOf="@id/Paytm_TAG"
-            tools:ignore="TextViewEdits" />
-
-
-        <EditText
-            android:id="@+id/Change_Doctor_advanceFee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_17sdp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:maxLines="1"
-            android:text="text is advance fee"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_12sdp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/AdvanceFee"
-            app:layout_constraintTop_toBottomOf="@id/Paytm_TAG"
-             />
 
         <View
             android:layout_marginStart="@dimen/_30sdp"
@@ -346,7 +212,7 @@
             android:layout_height="2dp"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@color/gray"
-            app:layout_constraintTop_toBottomOf="@id/AdvanceFee"
+            app:layout_constraintTop_toBottomOf="@id/Clinic_TAG"
             tools:layout_editor_absoluteX="39dp" />
 
         <TextView
@@ -359,7 +225,7 @@
             android:textSize="@dimen/_13sdp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/AdvanceFee" />
+            app:layout_constraintTop_toBottomOf="@id/Clinic_TAG" />
 
         <TextView
             android:id="@+id/Doctor_Permanent_Status"
@@ -368,6 +234,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:gravity="center"
             android:text="Available"
+            android:textColor="@color/black"
             android:textSize="@dimen/_15sdp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -443,10 +310,21 @@
             app:layout_constraintTop_toBottomOf="@id/Status_TAG" />
 
         <Button
+            android:id="@+id/QrCode"
+            app:layout_constraintTop_toBottomOf="@id/Status_TAG"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/_160sdp"
+            android:text="@string/QR"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+        <Button
             android:id="@+id/Logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_160sdp"
+            android:layout_marginTop="@dimen/_200sdp"
             android:text="@string/Logout"
             android:textColor="@color/white"
             app:layout_constraintLeft_toLeftOf="parent"

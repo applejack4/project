@@ -55,7 +55,7 @@ class EntireFragment : Fragment() {
                             if(it.isEmpty() && it.size == 0){
                                 _binding.RecyclerViewEntireHistory.visibility = View.GONE
                                 _binding.noApps.visibility = View.VISIBLE
-                                _binding.noApps.text = "you have no records."
+                                _binding.noApps.text = "no Medical records."
                             }
                         }
                     }
